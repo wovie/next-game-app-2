@@ -50,3 +50,30 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+## ESLint and Prettier
+
+### package.json
+
+@rushstack/eslint-patch: A work around for a known limitation in ESLint.
+
+@vue/eslint-config-prettier: Specially designed for Vue, turns off ESLint rules that might conflict with Prettier. "rules" always takes precedent over "extends". Use `npx eslint-config-prettier src/main.ts` to check configuration.
+
+@vue/eslint-config-typescript
+
+eslint: used to find problems/bugs with code
+
+eslint-plugin-vue
+
+prettier: opinionated code formatter
+
+### files
+
+.eslintrc.cjs
+.prettierrc.json
+
+### extentions
+
+Prettier
+ESLint
+
