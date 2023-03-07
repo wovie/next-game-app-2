@@ -15,7 +15,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: import.meta.env.DEV
+          ? 'http://localhost:5000'
+          : 'https://next-game-app-2-backend.onrender.com:443',
       },
     },
   },
