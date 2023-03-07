@@ -6,10 +6,31 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  const target =
-    command === 'serve'
-      ? 'http://localhost:5000'
-      : 'https://next-game-app-2-backend.onrender.com:443';
+  let proxy;
+
+  if (command === 'serve') {
+    proxy = {
+      '/api': {
+        target: 'http://localhost:5000',
+      },
+    };
+  } else {
+    proxy = {
+      '/api': {
+        target: 'https://next-game-app-2-backend.onrender.com:443',
+        changeOrigin: true,
+        // rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    };
+  }
+
+  // with options: http://localhost:5173/api/bar-> http://jsonplaceholder.typicode.com/bar
+  // '/api': {
+  // '/api': {
+  //   target: 'http://jsonplaceholder.typicode.com',
+  //   changeOrigin: true,
+  //   rewrite: (path) => path.replace(/^\/api/, ''),
+  // },
 
   return {
     plugins: [vue(), vueJsx()],
@@ -19,11 +40,7 @@ export default defineConfig(({ command }) => {
       },
     },
     server: {
-      proxy: {
-        '/api': {
-          target,
-        },
-      },
+      proxy,
     },
   };
 });
