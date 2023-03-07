@@ -71,9 +71,9 @@ router.post("/", async (req, res) => {
     // });
 
     const pattern = /[^\d]+/g;
-    const main = node.eq(0).contents().eq(1).text().replace(pattern, "");
-    const mainPlus = node.eq(1).contents().eq(1).text().replace(pattern, "");
-    const complete = node.eq(2).contents().eq(1).text().replace(pattern, "");
+    const main = parseInt(node.eq(0).contents().eq(1).text().replace(pattern, ""));
+    const mainPlus = parseInt(node.eq(1).contents().eq(1).text().replace(pattern, ""));
+    const complete = parseInt(node.eq(2).contents().eq(1).text().replace(pattern, ""));
 
     game.howLongToBeatTime = { main, mainPlus, complete };
     game.howLongToBeatTimeUpdated = Date.now();

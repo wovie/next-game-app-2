@@ -1,29 +1,21 @@
 <script setup lang="ts">
 import { reactive, ref, toRaw } from 'vue';
+import type { Ref } from 'vue';
 import _ from 'lodash';
 import RAWGService from './services/RAWGService';
 import GameService from './services/GameService';
 import OpenCriticScore from './components/OpenCriticScore.vue';
 import HowLongToBeatTime from './components/HowLongToBeatTime.vue';
 import WhenReleasing from './components/WhenReleasing.vue';
-import Platforms from './components/Platforms.vue';
+import PlatformChips from './components/PlatformChips.vue';
 import ExpandedRow from './components/ExpandedRow.vue';
 import { DEBUG_LOADING } from './util/debug';
 import { useUserStore } from '@/stores/user';
-
-interface Game {
-  id: number;
-  name: string;
-  platforms: object;
-  released: string;
-  openCriticId?: number;
-  openCriticScore?: number;
-  openCriticScoreUpdated?: number;
-}
+import type Game from './props/Game';
 
 const games: Game[] = reactive([]);
 const searchText = ref('');
-const searchResults = ref([]);
+const searchResults: Ref<Game[]> = ref([]);
 const searching = ref(false);
 const adding = ref(false);
 const page = ref(1);
@@ -52,19 +44,19 @@ window.onload = function () {
     auto_select: true,
   });
   google.accounts.id.renderButton(
-    document.getElementById('google_sign_in'),
-    { theme: 'outline', size: 'large' } // customization attributes
+    document.getElementById('google_sign_in') as HTMLElement,
+    { type: 'standard', theme: 'outline', size: 'large' } // customization attributes
   );
   google.accounts.id.prompt(); // also display the One Tap dialog
 };
 
-async function searchRawg(step: number) {
+async function searchRawg(step?: number) {
   if (step) page.value += step;
 
   searching.value = true;
   const results = await RAWGService.search({
     search: searchText.value,
-    page_size: step === null ? DEFAULT_PAGE_SIZE : MORE_PAGE_SIZE,
+    page_size: step === undefined ? DEFAULT_PAGE_SIZE : MORE_PAGE_SIZE,
     page: page.value,
   });
   searchResults.value.length = 0;
@@ -93,8 +85,9 @@ async function addGame(game: Game) {
 
   adding.value = true;
   clearSearch();
-  const { id, name, platforms, released } = game;
+  const { _id, id, name, platforms, released } = game;
   const result = await GameService.addGame({
+    _id,
     id,
     name,
     released,
@@ -117,7 +110,11 @@ async function fetchGames() {
 
 function formatDate(epoch: number) {
   const date = new Date(epoch);
-  return date.toLocaleDateString({}, { dateStyle: 'medium' });
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 function expand(game: Game) {
@@ -176,7 +173,7 @@ todos();
         ></v-btn>
       </template>
       <v-app-bar-title class="pa-2 ma-2">
-        <v-form @submit.prevent="searchRawg(null)">
+        <v-form @submit.prevent="searchRawg(undefined)">
           <v-text-field
             clearable
             @click:clear="clearSearch"
@@ -286,7 +283,7 @@ todos();
                   v-bind="props"
                 >
                   <td>{{ item.columns.name }}</td>
-                  <td><Platforms :game="item.raw" /></td>
+                  <td><PlatformChips :game="item.raw" /></td>
                   <td>
                     <OpenCriticScore
                       :game="item.raw"

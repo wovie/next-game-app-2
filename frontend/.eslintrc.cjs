@@ -26,4 +26,7 @@ module.exports = {
       },
     ],
   },
+  globals: {
+    google: 'writeable',
+  },
 };

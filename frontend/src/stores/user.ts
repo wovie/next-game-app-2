@@ -9,7 +9,7 @@ export const useUserStore = defineStore('user', () => {
   const userId = ref('');
 
   async function setUserCredential(credential: string) {
-    const decoded = jwt_decode(credential);
+    const decoded: any = jwt_decode(credential);
     const { sub } = decoded;
     userId.value = sub;
     isAdmin.value = await UserService.isAdmin(credential);

@@ -1,22 +1,23 @@
 import axios from 'axios';
 import GameService from './GameService';
+import type Game from '../props/Game';
 
 const url = 'api/oc/';
 
 class OpenCriticService {
-  static async search(criteria) {
+  static async search(criteria: string) {
     const result = await axios.post(url, { criteria });
     return result.data;
   }
 
-  static async game(id) {
+  static async game(id: number) {
     const result = await axios.get(`${url}${id}`);
     return result.data;
   }
 
-  static async data(game) {
+  static async data(game: Game) {
     if (!game.openCriticId) {
-      let result = await OpenCriticService.search(game.name);
+      const result = await OpenCriticService.search(game.name);
 
       if (result && result[0] && result[0].dist === 0) {
         // (dist === 0) indicates exact match
@@ -28,7 +29,7 @@ class OpenCriticService {
       }
     }
 
-    let result = await OpenCriticService.game(game.openCriticId);
+    const result = await OpenCriticService.game(game.openCriticId!);
     game = { ...game, ...result };
     await GameService.updateGame(game);
 

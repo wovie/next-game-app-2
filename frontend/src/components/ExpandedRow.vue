@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import GameService from '../services/GameService';
+import type Game from '../props/Game';
 
-const props = defineProps(['game', 'columns']);
+const props = defineProps<{
+  game: Game;
+  columns: any;
+}>();
+
+const openCriticId = ref(props.game.openCriticId);
+const howLongToBeatId = ref(props.game.howLongToBeatId);
+
 const emit = defineEmits(['gameDeleted']);
 
 const howLongToBeatUrl = `https://howlongtobeat.com/game/${props.game.howLongToBeatId}`;
 
-async function deleteGame(id: number) {
+async function deleteGame(id: string) {
   await GameService.deleteGame(id);
   emit('gameDeleted');
 }
@@ -21,7 +30,7 @@ async function deleteGame(id: number) {
             <v-text-field
               density="compact"
               label="OpenCritic"
-              v-model="game.openCriticId"
+              v-model="openCriticId"
               variant="outlined"
               v-if="Date.now() - game.released > 0"
             >
@@ -42,7 +51,7 @@ async function deleteGame(id: number) {
             <v-text-field
               density="compact"
               label="HowLongToBeat"
-              v-model="game.howLongToBeatId"
+              v-model="howLongToBeatId"
               variant="outlined"
               v-if="Date.now() - game.released > 0"
             >

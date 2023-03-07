@@ -7,7 +7,7 @@ const props = defineProps<{
 const daysUntilRelease =
   props.days !== undefined && props.days >= 0
     ? props.days
-    : Math.floor((props.epoch - Date.now()) / (1000 * 60 * 60 * 24));
+    : Math.floor((props.epoch! - Date.now()) / (1000 * 60 * 60 * 24));
 
 function whenReleasing() {
   if (daysUntilRelease === 0) return 'today';

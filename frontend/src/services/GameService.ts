@@ -2,6 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import OpenCriticService from './OpenCriticService';
 import HowLongToBeatService from './HowLongToBeatService';
+import type Game from '../props/Game';
 
 const url = 'api/games/';
 
@@ -11,10 +12,10 @@ class GameService {
     return result.data;
   }
 
-  static async addGame(game) {
-    game.released = Date.parse(game.released);
+  static async addGame(game: Game) {
+    game.released = Date.parse(game.released.toString());
 
-    game.platforms = _.map(game.platforms, (p) => {
+    game.platforms = _.map(game.platforms, (p: any) => {
       const { id, name } = p.platform;
       return { id, name };
     });
@@ -31,11 +32,11 @@ class GameService {
     return result;
   }
 
-  static updateGame(game) {
+  static updateGame(game: Game) {
     return axios.put(`${url}${game._id}`, game);
   }
 
-  static deleteGame(id) {
+  static deleteGame(id: string) {
     return axios.delete(`${url}${id}`);
   }
 }

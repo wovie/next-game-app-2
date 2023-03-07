@@ -23,7 +23,9 @@
   "devDependencies": {
     "@mdi/font": "^7.1.96",
     "@rushstack/eslint-patch": "^1.1.4",
+    "@types/google.accounts": "^0.0.6",
     "@types/jsdom": "^20.0.1",
+    "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.12",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",
