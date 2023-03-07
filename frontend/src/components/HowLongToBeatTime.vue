@@ -16,8 +16,8 @@ async function updateTime(game: any) {
   if (!userStore.canUpdate(game.howLongToBeatTimeUpdated)) return;
   loading.value = true;
   await HowLongToBeatService.data(game);
-  loading.value = false;
   emit('timeUpdated');
+  loading.value = false;
 }
 </script>
 
@@ -46,11 +46,18 @@ async function updateTime(game: any) {
           {{ game.howLongToBeatTime.complete }}
         </span>
         <v-icon
-          v-if="!game.howLongToBeatTime"
+          v-show="!game.howLongToBeatTime"
           icon="mdi-exclamation-thick"
           size="small"
         />
-        <v-tooltip activator="parent" location="top">
+        <v-tooltip
+          activator="parent"
+          location="top"
+          v-if="
+            game.openCriticScoreUpdated ||
+            userStore.canUpdate(props.game.openCriticScoreUpdated)
+          "
+        >
           <div v-if="game.howLongToBeatTimeUpdated">
             Main | Main+ | Complete
           </div>

@@ -54,6 +54,11 @@ router.post("/", async (req, res) => {
       });
 
       const { game_id } = result.data.data[0];
+
+      if (!game_id) {
+        throw new Error('Unable to determine HowLongToBeat ID!');
+      }
+
       game.howLongToBeatId = game_id;
     }
 

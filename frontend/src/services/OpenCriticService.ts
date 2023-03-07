@@ -1,6 +1,7 @@
 import axios from 'axios';
 import GameService from './GameService';
 import type Game from '../props/Game';
+import { DEBUG_ID_FAIL } from '../util/debug';
 
 const url = 'api/oc/';
 
@@ -19,7 +20,7 @@ class OpenCriticService {
     if (!game.openCriticId) {
       const result = await OpenCriticService.search(game.name);
 
-      if (result && result[0] && result[0].dist === 0) {
+      if (result && result[0] && result[0].dist === 0 && !DEBUG_ID_FAIL) {
         // (dist === 0) indicates exact match
         game.openCriticId = result[0].id;
       } else {

@@ -86,21 +86,19 @@ async function addGame(game: Game) {
   adding.value = true;
   clearSearch();
   const { _id, id, name, platforms, released } = game;
-  const result = await GameService.addGame({
+  await GameService.addGame({
     _id,
     id,
     name,
     released,
     platforms,
   });
-  console.log('result', result);
   adding.value = false;
   fetchGames();
 }
 
 async function fetchGames() {
   const result = await GameService.getGames();
-  console.log('result', result);
   games.length = 0;
   result.forEach((r: Game) => {
     games.push(r);
@@ -143,18 +141,15 @@ fetchGames();
 
 function todos() {
   const todos = [
-    'Deploy!',
-    'Update npm packages',
-    'Resolve IDE squigglies',
-    'Unreleased games that become released need manual OC/HLTB updates',
+    'Make expanded row id fields editable',
     'Add timestamp for manual checks',
     'Add lists',
+    'Add ITAD data',
+    'Add Steam Deck data',
   ];
 
   if (todos.length) {
-    console.info(
-      '============================================================='
-    );
+    console.info('======================== TODOS ============================');
     todos.forEach((t) => console.info(t));
   }
 }

@@ -19,8 +19,8 @@ async function updateScore(game: any) {
   if (!userStore.canUpdate(game.openCriticScoreUpdated)) return;
   loading.value = true;
   await OpenCriticService.data(game);
-  loading.value = false;
   emit('scoreUpdated');
+  loading.value = false;
 }
 </script>
 
@@ -39,7 +39,14 @@ async function updateScore(game: any) {
         :style="{ width: `${CIRCLE_SIZE}px`, height: `${CIRCLE_SIZE}px` }"
         elevation="1"
       >
-        <v-tooltip activator="parent" location="top">
+        <v-tooltip
+          activator="parent"
+          location="top"
+          v-if="
+            game.openCriticScoreUpdated ||
+            userStore.canUpdate(props.game.openCriticScoreUpdated)
+          "
+        >
           <div v-if="game.openCriticScoreUpdated">
             <WhenUpdated :epoch="game.openCriticScoreUpdated" />
           </div>
@@ -48,7 +55,7 @@ async function updateScore(game: any) {
           />
         </v-tooltip>
         <v-icon
-          v-if="game.openCriticScore < 0"
+          v-show="!game.openCriticScore"
           icon="mdi-exclamation-thick"
           size="small"
         />
