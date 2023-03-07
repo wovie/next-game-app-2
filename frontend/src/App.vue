@@ -257,7 +257,7 @@ todos();
             item-title="name"
             show-expand
             class="text-body-2"
-            v-model:expanded="expanded"
+            :expanded="expanded"
           >
             <template v-slot:top>
               <v-progress-linear

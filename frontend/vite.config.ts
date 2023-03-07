@@ -5,23 +5,25 @@ import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [vue(), vueJsx()],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: import.meta.env.DEV
-          ? 'http://localhost:5000'
-          : 'https://next-game-app-2-backend.onrender.com:443',
+export default defineConfig(({ command }) => {
+  const target =
+    command === 'serve'
+      ? 'http://localhost:5000'
+      : 'https://next-game-app-2-backend.onrender.com:443';
+
+  return {
+    plugins: [vue(), vueJsx()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
-  },
-  build: {
-    target: 'esnext',
-  },
+    server: {
+      proxy: {
+        '/api': {
+          target,
+        },
+      },
+    },
+  };
 });
