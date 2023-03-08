@@ -36,6 +36,12 @@ const headers = [
   { key: 'data-table-expand' },
 ];
 
+const footerLinks = [
+  { name: 'RAWG', link: 'https://rawg.io/' },
+  { name: 'OpenCritic', link: 'https://opencritic.com/' },
+  { name: 'HowLongToBeat', link: 'https://howlongtobeat.com/' },
+];
+
 window.onload = function () {
   google.accounts.id.initialize({
     client_id:
@@ -141,11 +147,14 @@ fetchGames();
 
 function todos() {
   const todos = [
+    'Enable expanded row for all users',
     'Make expanded row id fields editable',
     'Add timestamp for manual checks',
     'Add lists',
     'Add ITAD data',
     'Add Steam Deck data',
+    'Build some Node.js schedulers',
+    'Use RAWG bg image?',
   ];
 
   if (todos.length) {
@@ -324,6 +333,26 @@ todos();
         </v-card>
       </v-container>
     </v-main>
+    <v-footer>
+      <v-row justify="center" no-gutters>
+        <v-col cols="12" class="d-flex justify-space-evenly">
+          <v-btn
+            v-for="link in footerLinks"
+            :key="link.name"
+            size="small"
+            :href="link.link"
+            target="_blank"
+            variant="text"
+            class="font-weight-black"
+          >
+            {{ link.name }}
+          </v-btn>
+        </v-col>
+        <v-col cols="12 text-center text-caption">
+          Thanks for sharing your data and making this possible!
+        </v-col>
+      </v-row>
+    </v-footer>
   </v-app>
 </template>
 
