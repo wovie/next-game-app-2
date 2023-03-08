@@ -333,24 +333,22 @@ todos();
         </v-card>
       </v-container>
     </v-main>
-    <v-footer>
-      <v-row justify="center" no-gutters>
-        <v-col cols="12" class="d-flex justify-space-evenly">
-          <v-btn
-            v-for="link in footerLinks"
-            :key="link.name"
-            size="small"
-            :href="link.link"
-            target="_blank"
-            variant="text"
-            class="font-weight-black"
-          >
-            {{ link.name }}
-          </v-btn>
-        </v-col>
-        <v-col cols="12 text-center text-caption">
+    <v-footer :style="{ flexGrow: 0 }">
+      <v-row class="d-flex justify-end align-center" no-gutters>
+        <div class="text-caption">
           Thanks for sharing your data and making this possible!
-        </v-col>
+        </div>
+        <v-btn
+          v-for="link in footerLinks"
+          :key="link.name"
+          size="small"
+          :href="link.link"
+          target="_blank"
+          variant="text"
+          class="font-weight-black"
+        >
+          {{ link.name }}
+        </v-btn>
       </v-row>
     </v-footer>
   </v-app>
