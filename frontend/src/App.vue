@@ -13,6 +13,7 @@ import ExpandedRow from './components/ExpandedRow.vue';
 import { DEBUG_LOADING } from './util/debug';
 import { useUserStore } from '@/stores/user';
 import type Game from './props/Game';
+import JobService from './services/JobService';
 
 const games: Game[] = reactive([]);
 const searchText = ref('');
@@ -154,6 +155,11 @@ function login(response: any) {
   );
 }
 
+async function jobStatus() {
+  const result = await JobService.status();
+  console.log(result);
+}
+
 fetchGames();
 
 function todos() {
@@ -179,10 +185,18 @@ todos();
     <v-app-bar elevation="1">
       <template v-slot:prepend>
         <v-btn
+          icon="mdi-wrench-clock"
+          @click.stop="jobStatus()"
+          v-if="userStore.isAdmin"
+          elevation="1"
+        >
+        </v-btn>
+        <v-btn
           icon="mdi-plus-thick"
-          @click.stop="showSearch = true"
+          @click.stop="showSearch = !showSearch"
           elevation="1"
           v-if="userStore.isAdmin"
+          class="mx-2"
         ></v-btn>
       </template>
       <v-app-bar-title class="pa-2 ma-2">

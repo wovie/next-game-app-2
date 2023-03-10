@@ -22,6 +22,7 @@ app.use('/api/hltb', hltb.router);
 app.use('/api/oc', oc.router);
 app.use('/api/rawg', require('./routes/api/rawg'));
 app.use('/api/users', require('./routes/api/users'));
+app.use('/api/jobs', require('./routes/api/jobs'));
 
 console.log('TODO: explore express global error handling');
 // Global error handling

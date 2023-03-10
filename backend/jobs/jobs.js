@@ -2,6 +2,10 @@ const { ToadScheduler, SimpleIntervalJob, Task } = require('toad-scheduler');
 const oc = require('./oc');
 const hltb = require('./hltb');
 
+const OC_JOB_ID = 'oc_job_id';
+const HLTB_JOB_ID = 'hltb_job_id';
+const scheduler = new ToadScheduler();
+
 function logDividers(title) {
   const length = (60 - (title ? title.length + 2 : 0));
   let stars = '';
@@ -14,9 +18,10 @@ function logDividers(title) {
 }
 
 module.exports = {
+  scheduler,
+  OC_JOB_ID,
+  HLTB_JOB_ID,
   run: async () => {
-    const scheduler = new ToadScheduler();
-
     scheduler.addSimpleIntervalJob(
       new SimpleIntervalJob(
         { hours: oc.interval },
@@ -25,7 +30,7 @@ module.exports = {
           logDividers('OPENCRITIC');
           oc.run();
         }),
-        { id: 'oc_job_id' },
+        { id: OC_JOB_ID },
       ),
     );
 
@@ -37,12 +42,8 @@ module.exports = {
           logDividers('HOWLONGTOBEAT');
           hltb.run();
         }),
-        { id: 'hltb_job_id' },
+        { id: HLTB_JOB_ID },
       ),
     );
-
-    // scheduler.stopById('id_2');
-    // scheduler.removeById('id_1');
-    // scheduler.getById('id_1').getStatus();
   },
 };
