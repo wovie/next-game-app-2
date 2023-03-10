@@ -4,8 +4,13 @@ const url = 'api/users/';
 
 class UserService {
   static async isAdmin(token: string) {
-    const result = await axios.post(url, { token });
-    return result.data;
+    try {
+      const result = await axios.post(url, { token });
+      return result.data;
+    } catch (e: any) {
+      console.error(e.response.data);
+      return false;
+    }
   }
 }
 

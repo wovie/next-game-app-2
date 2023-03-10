@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/user';
 import { DEBUG_LOADING } from '../util/debug';
 
 const props = defineProps(['game']);
-const emit = defineEmits(['scoreUpdated']);
+const emit = defineEmits(['fetchGames']);
 
 const loading = ref(false);
 const userStore = useUserStore();
@@ -19,7 +19,7 @@ async function updateScore(game: any) {
   if (!userStore.canUpdate(game.openCriticScoreUpdated)) return;
   loading.value = true;
   await OpenCriticService.data(game);
-  emit('scoreUpdated');
+  emit('fetchGames');
   loading.value = false;
 }
 </script>

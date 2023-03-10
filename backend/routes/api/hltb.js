@@ -1,96 +1,110 @@
-const express = require("express");
-const axios = require("axios");
-const cheerio = require("cheerio");
+const express = require('express');
+const axios = require('axios');
+const cheerio = require('cheerio');
+const verify = require('../verify');
+const games = require('./games');
 
 const router = express.Router();
-const url = "https://howlongtobeat.com/";
+const url = 'https://howlongtobeat.com/';
 
-router.post("/", async (req, res) => {
+async function getData(game) {
   try {
-    const { _id, name, howLongToBeatId } = req.body;
-    const payload = {
-      searchType: "games",
-      searchTerms: [name],
-      searchPage: 1,
-      size: 20,
-      searchOptions: {
-        games: {
-          userId: 0,
-          platform: "",
-          sortCategory: "popular",
-          rangeCategory: "main",
-          rangeTime: {
-            min: 0,
-            max: 0,
+    const { name } = game;
+    let { howLongToBeatId } = game;
+    if (!howLongToBeatId) {
+      const payload = {
+        searchType: 'games',
+        searchTerms: [name],
+        searchPage: 1,
+        size: 20,
+        searchOptions: {
+          games: {
+            userId: 0,
+            platform: '',
+            sortCategory: 'popular',
+            rangeCategory: 'main',
+            rangeTime: {
+              min: 0,
+              max: 0,
+            },
+            gameplay: {
+              perspective: '',
+              flow: '',
+              genre: '',
+            },
+            modifier: '',
           },
-          gameplay: {
-            perspective: "",
-            flow: "",
-            genre: "",
+          users: {
+            sortCategory: 'postcount',
           },
-          modifier: "",
+          filter: '',
+          sort: 0,
+          randomizer: 0,
         },
-        users: {
-          sortCategory: "postcount",
-        },
-        filter: "",
-        sort: 0,
-        randomizer: 0,
-      },
-    };
+      };
 
-    let game = {
-      _id,
-      howLongToBeatId,
-    };
-
-    if (!game.howLongToBeatId) {
-      let result = await axios.post(`${url}api/search`, payload, {
+      const result = await axios.post(`${url}api/search`, payload, {
         headers: {
-          "Content-Type": "application/json",
-          "Origin": "https://howlongtobeat.com",
-          "Referer": "https://howlongtobeat.com",
+          'Content-Type': 'application/json',
+          Origin: 'https://howlongtobeat.com',
+          Referer: 'https://howlongtobeat.com',
         },
       });
 
       const { game_id } = result.data.data[0];
-
       if (!game_id) {
-        throw new Error('Unable to determine HowLongToBeat ID!');
+        throw new Error('Unable to determine HowLongToBeat ID');
       }
 
-      game.howLongToBeatId = game_id;
+      howLongToBeatId = game_id;
     }
 
-    result = await axios.get(`${url}game/${game.howLongToBeatId}`);
-
+    const result = await axios.get(`${url}game/${howLongToBeatId}`);
     const $ = cheerio.load(result.data);
-    let node = $("main");
+    let node = $('main');
     // console.log(node.attr("class"));
     node = node.find("div[class^='GameStats_game_times']");
     // console.log(node.attr("class"));
-    node = node.children("ul").contents();
-
+    node = node.children('ul').contents();
     // const data = $.extract({
     //   li: ["main div[class^='GameStats_game_times'] ul .GameStats_short__mnFjd"],
     // });
 
     const pattern = /[^\d]+/g;
-    const main = parseInt(node.eq(0).contents().eq(1).text().replace(pattern, ""));
-    const mainPlus = parseInt(node.eq(1).contents().eq(1).text().replace(pattern, ""));
-    const complete = parseInt(node.eq(2).contents().eq(1).text().replace(pattern, ""));
+    const main = parseInt(node.eq(0).contents().eq(1).text()
+      .replace(pattern, ''));
+    const mainPlus = parseInt(node.eq(1).contents().eq(1).text()
+      .replace(pattern, ''));
+    const complete = parseInt(node.eq(2).contents().eq(1).text()
+      .replace(pattern, ''));
 
-    game.howLongToBeatTime = { main, mainPlus, complete };
-    game.howLongToBeatTimeUpdated = Date.now();
-
-    // console.log(game);
-
-    axios.put(`http://localhost:5000/api/games/${_id}`, game);
-
-    res.status(201).send();
+    return games.methods.updateGame({
+      ...game,
+      howLongToBeatId,
+      howLongToBeatTime: { main, mainPlus, complete },
+      howLongToBeatTimeUpdated: Date.now(),
+    });
   } catch (e) {
-    res.status(500).send(e);
+    throw new Error(e.response.data.message);
+  }
+}
+
+router.post('/data', async (req, res) => {
+  try {
+    const v = await verify.req(req);
+    if (!v.isAdmin) throw new Error('Unauthorized');
+
+    const game = { ...req.body };
+    const result = await getData(game);
+    res.status(200).send(result);
+  } catch (e) {
+    res.status(500).json(e.message);
   }
 });
 
-module.exports = router;
+module.exports = {
+  router,
+  methods: {
+    getData,
+  },
+};

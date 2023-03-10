@@ -6,7 +6,7 @@ import { useUserStore } from '@/stores/user';
 import { DEBUG_LOADING } from '../util/debug';
 
 const props = defineProps(['game']);
-const emit = defineEmits(['timeUpdated']);
+const emit = defineEmits(['fetchGames']);
 
 const loading = ref(false);
 const userStore = useUserStore();
@@ -16,7 +16,7 @@ async function updateTime(game: any) {
   if (!userStore.canUpdate(game.howLongToBeatTimeUpdated)) return;
   loading.value = true;
   await HowLongToBeatService.data(game);
-  emit('timeUpdated');
+  emit('fetchGames');
   loading.value = false;
 }
 </script>
@@ -54,8 +54,8 @@ async function updateTime(game: any) {
           activator="parent"
           location="top"
           v-if="
-            game.openCriticScoreUpdated ||
-            userStore.canUpdate(props.game.openCriticScoreUpdated)
+            game.howLongToBeatTimeUpdated ||
+            userStore.canUpdate(props.game.howLongToBeatTimeUpdated)
           "
         >
           <div v-if="game.howLongToBeatTimeUpdated">

@@ -8,10 +8,11 @@ class HowLongToBeatService {
   static async data(game: Game) {
     try {
       if (DEBUG_ID_FAIL) throw 'DEBUG_ID_FAIL';
-      const result = await axios.post(url, game);
+      const result = await axios.post(`${url}data`, game);
       return result.data;
-    } catch (e) {
-      return e;
+    } catch (e: any) {
+      console.error(e.response.data);
+      return e.response.data;
     }
   }
 }

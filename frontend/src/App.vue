@@ -2,6 +2,7 @@
 import { reactive, ref, toRaw } from 'vue';
 import type { Ref } from 'vue';
 import _ from 'lodash';
+import axios from 'axios';
 import RAWGService from './services/RAWGService';
 import GameService from './services/GameService';
 import OpenCriticScore from './components/OpenCriticScore.vue';
@@ -19,11 +20,10 @@ const searchResults: Ref<Game[]> = ref([]);
 const searching = ref(false);
 const adding = ref(false);
 const page = ref(1);
-const expanded: number[] = reactive([]);
+const expanded: string[] = reactive([]);
 const drawer = ref(false);
 const showSearch = ref(false);
 const userStore = useUserStore();
-
 const DEFAULT_PAGE_SIZE = 10;
 const MORE_PAGE_SIZE = 10;
 
@@ -125,13 +125,13 @@ function expand(game: Game) {
   if (isExpanded(game)) expanded.length = 0;
   else {
     expanded.length = 0;
-    expanded.push(game.id);
+    expanded.push(game._id);
     console.log(toRaw(game));
   }
 }
 
 function isExpanded(game: Game) {
-  return expanded.indexOf(game.id) > -1;
+  return expanded.indexOf(game._id) > -1;
 }
 
 function focusSearch(focus: boolean) {
@@ -141,20 +141,29 @@ function focusSearch(focus: boolean) {
 function login(response: any) {
   const { credential } = response;
   userStore.setUserCredential(credential);
+  expanded.length = 0;
+
+  axios.interceptors.request.use(
+    (config) => {
+      config.headers.Authorization = `Bearer ${credential}`;
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
 }
 
 fetchGames();
 
 function todos() {
   const todos = [
-    'Enable expanded row for all users',
-    'Make expanded row id fields editable',
+    'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'Add timestamp for manual checks',
     'Add lists',
     'Add ITAD data',
     'Add Steam Deck data',
-    'Build some Node.js schedulers',
-    'Use RAWG bg image?',
+    'Setup Thunder extension',
   ];
 
   if (todos.length) {
@@ -189,6 +198,7 @@ todos();
             v-show="showSearch"
             density="compact"
             @update:focused="focusSearch"
+            v-if="userStore.isAdmin"
           ></v-text-field>
         </v-form>
       </v-app-bar-title>
@@ -257,7 +267,7 @@ todos();
             :items-per-page="10"
             :headers="headers"
             :items="games"
-            item-value="id"
+            item-value="_id"
             item-title="name"
             show-expand
             class="text-body-2"
@@ -276,7 +286,7 @@ todos();
               <ExpandedRow
                 :columns="columns"
                 :game="item.raw"
-                @game-deleted="fetchGames"
+                @fetch-games="fetchGames"
               />
             </template>
 
@@ -291,13 +301,13 @@ todos();
                   <td>
                     <OpenCriticScore
                       :game="item.raw"
-                      @score-updated="fetchGames"
+                      @fetch-games="fetchGames"
                     />
                   </td>
                   <td>
                     <HowLongToBeatTime
                       :game="item.raw"
-                      @time-updated="fetchGames"
+                      @fetch-games="fetchGames"
                     />
                   </td>
                   <td>
@@ -323,7 +333,6 @@ todos();
                       variant="text"
                       density="compact"
                       elevation="1"
-                      v-if="userStore.isAdmin"
                     />
                   </td>
                 </tr>
@@ -335,9 +344,6 @@ todos();
     </v-main>
     <v-footer :style="{ flexGrow: 0 }">
       <v-row class="d-flex justify-end align-center" no-gutters>
-        <div class="text-caption">
-          Thanks for sharing your data and making this possible!
-        </div>
         <v-btn
           v-for="link in footerLinks"
           :key="link.name"

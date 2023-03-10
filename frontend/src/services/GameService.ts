@@ -8,13 +8,18 @@ const url = 'api/games/';
 
 class GameService {
   static async getGames() {
-    const result = await axios.get(url);
-    return result.data;
+    try {
+      const result = await axios.get(url);
+      return result.data;
+    } catch (e: any) {
+      console.error(e.response.data);
+      return e;
+    }
   }
 
   static async addGame(game: Game) {
     try {
-      game.released = Date.parse(game.released.toString());
+      game.released = game.released && Date.parse(game.released.toString());
 
       game.platforms = _.map(game.platforms, (p: any) => {
         const { id, name } = p.platform;
@@ -23,7 +28,7 @@ class GameService {
 
       const result = await axios.post(url, game);
 
-      if (Date.now() - game.released > 0) {
+      if (game.released && Date.now() - game.released > 0) {
         const { _id } = result.data;
         game._id = _id;
         await OpenCriticService.data(game);
@@ -31,17 +36,30 @@ class GameService {
       }
 
       return result;
-    } catch (e) {
+    } catch (e: any) {
+      console.error(e.response.data);
       return e;
     }
   }
 
   static updateGame(game: Game) {
-    return axios.put(`${url}${game._id}`, game);
+    try {
+      const result = axios.put(`${url}update`, game);
+      return result;
+    } catch (e: any) {
+      console.error(e.response.data);
+      return e;
+    }
   }
 
-  static deleteGame(id: string) {
-    return axios.delete(`${url}${id}`);
+  static async deleteGame(id: string) {
+    try {
+      const result = await axios.delete(`${url}${id}`);
+      return result;
+    } catch (e: any) {
+      console.error(e.response.data);
+      return e.response.data;
+    }
   }
 }
 

@@ -9,12 +9,12 @@ export default interface Game {
     complete?: number;
   };
   howLongToBeatTimeUpdated?: number;
-  id: number;
-  name: string;
+  id?: number;
+  name?: string;
   openCriticId?: number;
   openCriticScore?: number;
   openCriticScoreUpdated?: number;
   openCriticUrl?: string;
   platforms?: Platform[];
-  released: number;
+  released?: number;
 }

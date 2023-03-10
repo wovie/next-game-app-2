@@ -1,6 +1,10 @@
 const express = require('express');
 const mdb = require('./db/mdb');
-const cors = require('cors');
+// const cors = require('cors');
+const jobs = require('./jobs/jobs');
+const oc = require('./routes/api/oc');
+const games = require('./routes/api/games');
+const hltb = require('./routes/api/hltb');
 
 const app = express();
 const port = 5000;
@@ -13,21 +17,11 @@ console.log('TODO: explore cors');
 // app.use(cors());
 
 // Routing
-app.use('/api/games', require('./routes/api/games'));
-app.use('/api/hltb', require('./routes/api/hltb'));
-app.use('/api/oc', require('./routes/api/oc'));
+app.use('/api/games', games.router);
+app.use('/api/hltb', hltb.router);
+app.use('/api/oc', oc.router);
 app.use('/api/rawg', require('./routes/api/rawg'));
 app.use('/api/users', require('./routes/api/users'));
-
-console.log('TODO: handle production');
-// Handle production
-// if (process.env.NODE_ENV === 'production') {
-//   // Static folder
-//   app.use(express.static(__dirname + '/public'));
-
-//   // Handle SPA
-//   app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.htmnl'));
-// }
 
 console.log('TODO: explore express global error handling');
 // Global error handling
@@ -36,12 +30,14 @@ console.log('TODO: explore express global error handling');
 //   res.status(500).send('Something broke!');
 // });
 
-mdb.connectToServer(err => {
+mdb.connectToServer((err) => {
   if (err) {
     console.error(err);
     process.exit();
   }
 
-  app.listen(port, () => console.log(`Server started on port: ${port}`))
+  app.listen(port, () => {
+    console.log(`Server started on port: ${port}`);
+    jobs.run();
+  });
 });
-
