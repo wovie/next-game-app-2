@@ -5,7 +5,7 @@ const oc = require('../routes/api/oc');
 const idProp = 'openCriticId';
 const updatedProp = 'openCriticScoreUpdated';
 const interval = 4; // hours
-const apiRate = 4; // requests per second
+const apiRate = 1; // requests per 5 seconds
 let bucket = [];
 
 async function checkLimits() {
@@ -71,7 +71,7 @@ module.exports = {
       for (let i = 0; i < apiRate; i += 1) {
         getData(bucket.pop());
       }
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 5000));
     } while (bucket.length > 0);
   },
 };

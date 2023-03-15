@@ -40,11 +40,9 @@ mdb.connectToServer((err) => {
   app.listen(port, () => {
     console.log(`Server started on port: ${port}`);
 
-    console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-
-    if (process.env.NODE_ENV === 'production') {
-      console.log('Running jobs');
+    if (process.env.NODE_ENV.trim() === 'development') {
       jobs.run();
+      console.log('Jobs scheduled');
     }
   });
 });

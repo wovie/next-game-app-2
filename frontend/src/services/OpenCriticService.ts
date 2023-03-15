@@ -10,7 +10,6 @@ class OpenCriticService {
       return result.data;
     } catch (e: any) {
       console.error(e.response.data);
-      return e.response.data;
     }
   }
 }

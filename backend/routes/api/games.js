@@ -63,7 +63,7 @@ router.put('/update', async (req, res) => {
     await updateGame(req.body);
     res.status(204).send();
   } catch (e) {
-    res.status(500).json(e);
+    res.status(500).json(e.message);
   }
 });
 

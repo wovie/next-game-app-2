@@ -5,6 +5,8 @@ const props = defineProps<{
 }>();
 
 function whenUpdated() {
+  if (props.epoch === undefined && props.days === undefined) return 'never';
+
   const daysSinceUpdate =
     props.days !== undefined && props.days >= 0
       ? props.days
@@ -23,5 +25,5 @@ function whenUpdated() {
 </script>
 
 <template>
-  <span>Updated {{ whenUpdated() }}</span>
+  <span>{{ whenUpdated() }}</span>
 </template>

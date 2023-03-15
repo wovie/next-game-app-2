@@ -5,6 +5,7 @@ import OpenCriticService from '../services/OpenCriticService';
 import HowLongToBeatService from '../services/HowLongToBeatService';
 import type Game from '../props/Game';
 import { useUserStore } from '@/stores/user';
+import WhenUpdated from '../components/WhenUpdated.vue';
 
 const props = defineProps<{
   game: Game;
@@ -46,6 +47,12 @@ async function changeHowLongToBeatId() {
   loadingHowLongToBeat.value = false;
   emit('fetchGames');
 }
+
+async function updateTimestamp(game: Game) {
+  const { _id } = game;
+  await GameService.updateGame({ _id, timestamp: Date.now() });
+  emit('fetchGames', true);
+}
 </script>
 
 <template>
@@ -72,6 +79,7 @@ async function changeHowLongToBeatId() {
                     size="small"
                     target="_blank"
                     class="text-caption pa-0"
+                    @click="updateTimestamp(game)"
                     >{{ game.openCriticUrl }}
                   </v-btn>
                 </template>
@@ -97,6 +105,7 @@ async function changeHowLongToBeatId() {
                     target="_blank"
                     class="text-caption pa-0"
                     v-if="game.howLongToBeatId"
+                    @click="updateTimestamp(game)"
                     >{{ howLongToBeatUrl }}
                   </v-btn>
                 </template>
@@ -104,14 +113,18 @@ async function changeHowLongToBeatId() {
             </v-form>
           </v-col>
         </v-row>
-        <v-row class="mt-0">
-          <v-col class="text-right py-1">
+        <v-row class="mt-0" align="center" v-if="userStore.isAdmin">
+          <v-col class="text-caption font-italic">
+            <span v-show="game.openCriticId && game.howLongToBeatId"
+              >Last checked <WhenUpdated :epoch="game.timestamp"
+            /></span>
+          </v-col>
+          <v-col class="text-right py-1" cols="1">
             <v-btn
               @click="deleteGame(game._id)"
               color="error"
               size="small"
               icon="mdi-delete"
-              v-if="userStore.isAdmin"
             >
             </v-btn>
           </v-col>

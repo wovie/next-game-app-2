@@ -17,4 +17,5 @@ export default interface Game {
   openCriticUrl?: string;
   platforms?: Platform[];
   released?: number;
+  timestamp?: number;
 }

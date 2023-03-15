@@ -48,7 +48,7 @@ async function updateScore(game: any) {
           "
         >
           <div v-if="game.openCriticScoreUpdated">
-            <WhenUpdated :epoch="game.openCriticScoreUpdated" />
+            Updated <WhenUpdated :epoch="game.openCriticScoreUpdated" />
           </div>
           <UpdateNow
             v-if="userStore.canUpdate(props.game.openCriticScoreUpdated)"

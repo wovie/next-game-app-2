@@ -104,13 +104,13 @@ async function addGame(game: Game) {
   fetchGames();
 }
 
-async function fetchGames() {
+async function fetchGames(keepExpanded?: boolean) {
   const result = await GameService.getGames();
   games.length = 0;
   result.forEach((r: Game) => {
     games.push(r);
   });
-  expanded.length = 0;
+  if (!keepExpanded) expanded.length = 0;
 }
 
 function formatDate(epoch: number) {
@@ -164,11 +164,11 @@ fetchGames();
 
 function todos() {
   const todos = [
-    'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
-    'Add timestamp for manual checks',
     'Add lists',
     'Add ITAD data',
     'Add Steam Deck data',
+    'New solution for jobs - Render free plan sleeps',
+    'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'Setup Thunder extension',
   ];
 

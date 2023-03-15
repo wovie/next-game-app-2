@@ -4,8 +4,8 @@ const hltb = require('../routes/api/hltb');
 
 const idProp = 'howLongToBeatId';
 const updatedProp = 'howLongToBeatTimeUpdated';
-const interval = 23; // hours
-const apiRate = 1; // requests per second
+const interval = 9; // hours
+const apiRate = 1; // requests per 5 seconds
 let bucket = [];
 
 async function getData(game) {
@@ -45,7 +45,7 @@ module.exports = {
       for (let i = 0; i < apiRate; i += 1) {
         getData(bucket.pop());
       }
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 5000));
     } while (bucket.length > 0);
   },
 };

@@ -13,7 +13,6 @@ class GameService {
       return result.data;
     } catch (e: any) {
       console.error(e.response.data);
-      return e;
     }
   }
 
@@ -38,17 +37,15 @@ class GameService {
       return result;
     } catch (e: any) {
       console.error(e.response.data);
-      return e;
     }
   }
 
-  static updateGame(game: Game) {
+  static async updateGame(game: Game) {
     try {
-      const result = axios.put(`${url}update`, game);
+      const result = await axios.put(`${url}update`, game);
       return result;
     } catch (e: any) {
       console.error(e.response.data);
-      return e;
     }
   }
 
@@ -58,7 +55,6 @@ class GameService {
       return result;
     } catch (e: any) {
       console.error(e.response.data);
-      return e.response.data;
     }
   }
 }
