@@ -31,7 +31,7 @@ async function updateScore(game: any) {
         :class="{
           link: userStore.canUpdate(props.game.openCriticScoreUpdated),
         }"
-        v-if="!loading && Date.now() - props.game.released >= 0"
+        v-if="!loading && props.game.openCriticScore"
         @click="updateScore(props.game)"
         border
         class="d-flex justify-center align-center oc"

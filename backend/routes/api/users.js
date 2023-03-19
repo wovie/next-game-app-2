@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
     const v = await verify.req(req);
     res.status(200).send(v.isAdmin);
   } catch (e) {
-    res.status(500).json(e);
+    res.status(500).json(e.message);
   }
 });
 

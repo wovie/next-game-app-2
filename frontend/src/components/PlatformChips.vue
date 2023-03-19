@@ -33,6 +33,7 @@ platforms.value = _.filter(props.game.platforms, (p: Platform) => {
       size="small"
       :key="platform.id"
       :link="false"
+      class="mr-0 ml-1"
     >
       {{ _.find(relevantPlatforms!, { id: platform.id })?.short }}
     </v-chip>

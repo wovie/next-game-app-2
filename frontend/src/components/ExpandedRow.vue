@@ -16,10 +16,10 @@ const openCriticId = ref(props.game.openCriticId);
 const howLongToBeatId = ref(props.game.howLongToBeatId);
 const loadingOpenCritic = ref(false);
 const loadingHowLongToBeat = ref(false);
-
 const emit = defineEmits(['fetchGames']);
-
 const howLongToBeatUrl = `https://howlongtobeat.com/game/${props.game.howLongToBeatId}`;
+const decks = ['Playing', 'PC', 'Switch'];
+const inDecks = ref([]);
 
 async function deleteGame(id: string) {
   await GameService.deleteGame(id);
@@ -60,7 +60,7 @@ async function updateTimestamp(game: Game) {
     <td :colspan="columns.length">
       <v-container fluid>
         <v-row>
-          <v-col>
+          <v-col class="d-flex flex-column" :style="{ gap: '1rem' }" cols="5">
             <v-form @submit.prevent="changeOpenCriticId()">
               <v-text-field
                 density="compact"
@@ -78,15 +78,13 @@ async function updateTimestamp(game: Game) {
                     :href="game.openCriticUrl"
                     size="small"
                     target="_blank"
-                    class="text-caption pa-0"
+                    class="text-caption pa-0 text-primary"
                     @click="updateTimestamp(game)"
                     >{{ game.openCriticUrl }}
                   </v-btn>
                 </template>
               </v-text-field>
             </v-form>
-          </v-col>
-          <v-col>
             <v-form @submit.prevent="changeHowLongToBeatId()">
               <v-text-field
                 density="compact"
@@ -103,7 +101,7 @@ async function updateTimestamp(game: Game) {
                     :href="howLongToBeatUrl"
                     size="small"
                     target="_blank"
-                    class="text-caption pa-0"
+                    class="text-caption pa-0 text-primary"
                     v-if="game.howLongToBeatId"
                     @click="updateTimestamp(game)"
                     >{{ howLongToBeatUrl }}
@@ -112,19 +110,36 @@ async function updateTimestamp(game: Game) {
               </v-text-field>
             </v-form>
           </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="5">
+            <v-combobox
+              v-model="inDecks"
+              :items="decks"
+              label="Select some decks"
+              multiple
+              hide-details
+              density="compact"
+              variant="solo"
+              :disabled="!userStore.isLoggedIn"
+            ></v-combobox>
+          </v-col>
         </v-row>
-        <v-row class="mt-0" align="center" v-if="userStore.isAdmin">
+        <v-row class="mt-0" align="center">
           <v-col class="text-caption font-italic">
-            <span v-show="game.openCriticId && game.howLongToBeatId"
+            <span
+              v-show="
+                userStore.isAdmin && game.openCriticId && game.howLongToBeatId
+              "
               >Last checked <WhenUpdated :epoch="game.timestamp"
             /></span>
           </v-col>
-          <v-col class="text-right py-1" cols="1">
+          <v-col class="text-right py-1">
             <v-btn
               @click="deleteGame(game._id)"
               color="error"
-              size="small"
+              size="x-small"
               icon="mdi-delete"
+              v-if="userStore.isAdmin"
             >
             </v-btn>
           </v-col>
@@ -137,5 +152,10 @@ async function updateTimestamp(game: Game) {
 <style>
 .expanded-row .v-messages {
   display: none;
+}
+
+.expanded-row .v-input__details .v-btn__content {
+  overflow: clip;
+  justify-content: start;
 }
 </style>

@@ -1,9 +1,12 @@
 const { ToadScheduler, SimpleIntervalJob, Task } = require('toad-scheduler');
 const oc = require('./oc');
 const hltb = require('./hltb');
+const ocPopular = require('./ocPopular');
 
 const OC_JOB_ID = 'oc_job_id';
 const HLTB_JOB_ID = 'hltb_job_id';
+const OC_POPULAR_JOB_ID = 'oc_popular_job_id';
+
 const status = {
   scheduler: null,
   timestamp: null,
@@ -55,6 +58,18 @@ module.exports = {
           hltb.run();
         }),
         { id: HLTB_JOB_ID },
+      ),
+    );
+
+    status.scheduler.addSimpleIntervalJob(
+      new SimpleIntervalJob(
+        { hours: ocPopular.interval },
+        new Task('OpenCritic Popular Task Runner', () => {
+          logDividers();
+          logDividers('OPENCRITIC POPULAR');
+          ocPopular.run();
+        }),
+        { id: OC_POPULAR_JOB_ID },
       ),
     );
   },

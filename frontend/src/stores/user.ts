@@ -4,7 +4,7 @@ import jwt_decode from 'jwt-decode';
 import UserService from '../services/UserService';
 
 export const useUserStore = defineStore('user', () => {
-  const loggedIn = ref(false);
+  const isLoggedIn = ref(false);
   const isAdmin = ref(false);
   const userId = ref('');
 
@@ -13,7 +13,7 @@ export const useUserStore = defineStore('user', () => {
     const { sub } = decoded;
     userId.value = sub;
     isAdmin.value = await UserService.isAdmin(credential);
-    loggedIn.value = userId.value.length > 0;
+    isLoggedIn.value = userId.value.length > 0;
     return userId.value;
   }
 
@@ -25,5 +25,5 @@ export const useUserStore = defineStore('user', () => {
     return daysSinceUpdate > 0 && isAdmin.value;
   }
 
-  return { loggedIn, isAdmin, setUserCredential, canUpdate };
+  return { isLoggedIn, isAdmin, setUserCredential, canUpdate };
 });

@@ -4,6 +4,7 @@ const oc = require('../routes/api/oc');
 
 const idProp = 'openCriticId';
 const updatedProp = 'openCriticScoreUpdated';
+const urlProp = 'openCriticUrl';
 const interval = 4; // hours
 const apiRate = 1; // requests per 5 seconds
 let bucket = [];
@@ -46,9 +47,13 @@ module.exports = {
   interval,
   run: async () => {
     bucket = [];
+    let cursor;
 
-    let cursor = await findGames.findMissingData(idProp);
+    cursor = await findGames.findMissingData(idProp);
     bucket = await handleCursor(cursor, bucket, { title: 'findMissingData', idProp });
+
+    cursor = await findGames.findMissingData(urlProp);
+    bucket = await handleCursor(cursor, bucket, { title: 'findMissingData', urlProp });
 
     const dateRangeQueries = [
       { beginDays: 0, endDays: 14, tresholdDays: 1, updatedProp },

@@ -20,7 +20,7 @@ module.exports = {
       });
       const payload = ticket.getPayload();
       const userId = payload.sub;
-      const isVerified = userId && userId.length;
+      const isVerified = userId && userId.length > 0;
 
       return {
         isVerified,

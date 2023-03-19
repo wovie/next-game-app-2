@@ -14,13 +14,22 @@ async function updateGame(game) {
   );
 }
 
+async function addGame(game) {
+  const games = mdb.getCollection('games');
+  const { _id, ...rest } = game;
+  const query = { id: game.id };
+  const replacement = rest;
+  const options = { upsert: true };
+  return games.replaceOne(query, replacement, options);
+}
+
 router.get('/', async (req, res) => {
   try {
     const games = mdb.getCollection('games');
     const result = await games.find({}).sort({ openCriticScore: -1 }).toArray();
     res.status(200).send(result);
   } catch (e) {
-    res.status(500).json(e);
+    res.status(500).json(e.message);
   }
 });
 
@@ -29,16 +38,11 @@ router.post('/', async (req, res) => {
     const v = await verify.req(req);
     if (!v.isAdmin) throw new Error('Unauthorized');
 
-    const games = mdb.getCollection('games');
-    const { _id, ...rest } = req.body;
-    const query = { id: req.body.id };
-    const replacement = rest;
-    const options = { upsert: true };
-    const result = await games.replaceOne(query, replacement, options);
+    const result = await addGame(req.body);
     const { upsertedId } = result;
     res.status(201).send({ _id: upsertedId });
   } catch (e) {
-    res.status(500).json(e);
+    res.status(500).json(e.message);
   }
 });
 
@@ -51,7 +55,7 @@ router.delete('/:id', async (req, res) => {
     await games.deleteOne({ _id: new ObjectId(req.params.id) });
     res.status(204).send();
   } catch (e) {
-    res.status(500).json(e);
+    res.status(500).json(e.message);
   }
 });
 
@@ -71,5 +75,6 @@ module.exports = {
   router,
   methods: {
     updateGame,
+    addGame,
   },
 };

@@ -54,6 +54,11 @@ async function getData(game) {
   }
 }
 
+async function popularGames() {
+  const result = await axios.get(`${url}popular`, { headers });
+  return result;
+}
+
 router.post('/data', async (req, res) => {
   try {
     const v = await verify.req(req);
@@ -72,5 +77,6 @@ module.exports = {
   methods: {
     getGame,
     getData,
+    popularGames,
   },
 };

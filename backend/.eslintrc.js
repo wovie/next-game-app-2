@@ -19,5 +19,6 @@ module.exports = {
     'no-await-in-loop': 'off',
     'no-promise-executor-return': 'off',
     'no-underscore-dangle': 'off',
+    'no-continue': 'off',
   },
 };

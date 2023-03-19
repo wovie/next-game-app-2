@@ -26,4 +26,11 @@ module.exports = {
     const games = mdb.getCollection('games');
     return games.find(query).sort({ released: -1 });
   },
+
+  findOpenCriticId: (ids) => {
+    const query = { openCriticId: { $in: ids } };
+
+    const games = mdb.getCollection('games');
+    return games.find(query).sort({ released: -1 });
+  },
 };
