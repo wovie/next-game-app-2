@@ -4,7 +4,7 @@ const hltb = require('../routes/api/hltb');
 
 const idProp = 'howLongToBeatId';
 const updatedProp = 'howLongToBeatTimeUpdated';
-const interval = 9; // hours
+const interval = 5; // hours
 const apiRate = 1; // requests per 5 seconds
 let bucket = [];
 

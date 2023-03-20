@@ -23,12 +23,12 @@ async function updateTime(game: any) {
 
 <template>
   <v-row no-gutters class="h-75">
-    <v-col class="fill-height d-flex align-center">
+    <v-col class="fill-height d-flex align-center justify-end">
       <v-sheet
         @click="updateTime(props.game)"
         v-if="!loading && Date.now() - props.game.released >= 0"
         border
-        class="d-flex justify-space-evenly fill-height align-center w-100 hltb"
+        class="d-flex justify-space-evenly fill-height align-center hltb"
         :class="{
           link: userStore.canUpdate(props.game.howLongToBeatTimeUpdated),
         }"
@@ -81,6 +81,9 @@ async function updateTime(game: any) {
 .hltb {
   background: #287fc2;
   color: #fff;
+  width: 130px;
+  min-width: 130px;
+  max-width: 130px;
 }
 .v-divider {
   color: #fff;

@@ -25,7 +25,7 @@ platforms.value = _.filter(props.game.platforms, (p: Platform) => {
 });
 </script>
 
-<template>
+<!-- <template>
   <v-chip-group class="justify-end" variant="outlined">
     <v-chip
       v-for="platform in platforms"
@@ -38,4 +38,15 @@ platforms.value = _.filter(props.game.platforms, (p: Platform) => {
       {{ _.find(relevantPlatforms!, { id: platform.id })?.short }}
     </v-chip>
   </v-chip-group>
+</template> -->
+
+<template>
+  <div class="text-end text-caption">
+    {{
+      _.map(
+        platforms,
+        (p) => _.find(relevantPlatforms, { id: p.id })!.short
+      ).join(', ')
+    }}
+  </div>
 </template>

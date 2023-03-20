@@ -1,13 +1,15 @@
 module.exports = async function handleCursor(cursor, bucket, query) {
   if (query) {
-    const { title, beginDays, endDays, tresholdDays, idProp } = query;
+    const { title, beginDays, endDays, tresholdDays, idProp, urlProp } = query;
     const titleLogs = [];
 
     if (beginDays >= 0 && endDays >= 0 && tresholdDays >= 0) {
       titleLogs.push(`from ${beginDays} - ${endDays} days`);
       titleLogs.push(`threshold ${tresholdDays} days`);
-    } else {
+    } else if (idProp) {
       titleLogs.push(idProp);
+    } else if (urlProp) {
+      titleLogs.push(urlProp);
     }
 
     console.log(`========== ${title}: ${titleLogs.join(', ')}`);

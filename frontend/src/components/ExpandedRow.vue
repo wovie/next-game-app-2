@@ -49,6 +49,8 @@ async function changeHowLongToBeatId() {
 }
 
 async function updateTimestamp(game: Game) {
+  if (!userStore.isAdmin) return;
+
   const { _id } = game;
   await GameService.updateGame({ _id, timestamp: Date.now() });
   emit('fetchGames', true);

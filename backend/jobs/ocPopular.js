@@ -4,7 +4,7 @@ const oc = require('../routes/api/oc');
 const rawg = require('../routes/api/rawg');
 const games = require('../routes/api/games');
 
-const interval = 22; // hours
+const interval = 6; // hours
 const apiRate = 1; // requests per 5 seconds
 let bucket = [];
 

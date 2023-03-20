@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
 import MainDeck from './components/MainDeck.vue';
 
+const drawer = ref(true);
+const rail = ref(true);
+const open = ref([]);
 const userStore = useUserStore();
 let interceptor: number = -1;
+let gTimeout = 100;
 
 const footerLinks = [
   { name: 'RAWG', link: 'https://rawg.io/' },
@@ -19,12 +24,26 @@ window.onload = function () {
     callback: login,
     auto_select: true,
   });
-  google.accounts.id.renderButton(
-    document.getElementById('google_sign_in') as HTMLElement,
-    { type: 'standard', theme: 'outline', size: 'large' }
-  );
-  google.accounts.id.prompt();
+  renderGoogleButton(document.getElementById('google_sign_in'));
 };
+
+function renderGoogleButton(element: HTMLElement | null) {
+  if (element === null) {
+    gTimeout = gTimeout * 3;
+    setTimeout(() => {
+      renderGoogleButton(document.getElementById('google_sign_in'));
+    }, gTimeout);
+  }
+
+  if (google) {
+    google.accounts.id.renderButton(element as HTMLElement, {
+      type: 'icon',
+      theme: 'filled_black',
+      size: 'large',
+      shape: 'circle',
+    });
+  }
+}
 
 function login(response: any) {
   const { credential } = response;
@@ -43,17 +62,34 @@ function login(response: any) {
   );
 }
 
+function goHome() {
+  console.log('goHome');
+  rail.value = true;
+  open.value.length = 0;
+}
+
+function goDecks() {
+  console.log('goDecks');
+  rail.value = false;
+}
+
+function goAdmin() {
+  console.log('goAdmin');
+  rail.value = false;
+}
+
+renderGoogleButton(document.getElementById('google_sign_in'));
+
 function todos() {
   const todos = [
-    'Move addGame() to MainDeck',
+    'Move addGame() to nav drawer',
     'Add filters to MainDeck',
-    'Add jobs: popular, 90+, 80+',
     'Add user decks',
+    'Add jobs: 90+, 80+',
     'Branding: OnDeck',
     'Add ITAD data',
     'Add Steam Deck data',
     'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
-    'Setup Thunder extension',
     'New solution for jobs (Render free plan sleeps)',
   ];
 
@@ -67,13 +103,50 @@ todos();
 
 <template>
   <v-app>
-    <v-app-bar elevation="1">
-      <template v-slot:prepend></template>
-      <v-app-bar-title class="pa-2 ma-2"></v-app-bar-title>
-      <template v-slot:append>
-        <div id="google_sign_in"></div>
-      </template>
-    </v-app-bar>
+    <v-navigation-drawer v-model="drawer" permanent :rail="rail" floating>
+      <v-list-item nav class="justify-center">
+        <div id="google_sign_in" />
+      </v-list-item>
+
+      <v-list nav v-model:opened="open">
+        <v-list-item
+          prepend-icon="mdi-home-outline"
+          value="main"
+          @click="goHome()"
+          title="Home"
+        />
+
+        <v-list-group value="decks">
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              prepend-icon="mdi-playlist-star"
+              :disabled="!userStore.isLoggedIn"
+              @click="goDecks()"
+              title="Decks"
+            />
+          </template>
+          <v-list-item>
+            Deck 1
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-group value="admin">
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              prepend-icon="mdi-shield-crown-outline"
+              v-if="userStore.isAdmin"
+              @click="goAdmin()"
+              title="Admin"
+            />
+          </template>
+          <v-list-item>
+            Admin 1
+          </v-list-item>
+        </v-list-group>
+      </v-list>
+    </v-navigation-drawer>
 
     <v-main>
       <v-container fluid class="v-col-lg-6">

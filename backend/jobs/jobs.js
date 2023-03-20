@@ -48,6 +48,7 @@ module.exports = {
         { id: OC_JOB_ID },
       ),
     );
+    console.log(`Added ${OC_JOB_ID}, running every ${oc.interval} hours`);
 
     status.scheduler.addSimpleIntervalJob(
       new SimpleIntervalJob(
@@ -60,6 +61,7 @@ module.exports = {
         { id: HLTB_JOB_ID },
       ),
     );
+    console.log(`Added ${HLTB_JOB_ID}, running every ${hltb.interval} hours`);
 
     status.scheduler.addSimpleIntervalJob(
       new SimpleIntervalJob(
@@ -72,5 +74,6 @@ module.exports = {
         { id: OC_POPULAR_JOB_ID },
       ),
     );
+    console.log(`Added ${OC_POPULAR_JOB_ID}, running every ${ocPopular.interval} hours`);
   },
 };

@@ -17,7 +17,11 @@ const headers = [
   { title: 'Name', align: 'start', key: 'name' },
   { title: 'Platforms', align: 'end', key: 'platforms' },
   { title: 'OpenCritic', align: 'end', key: 'openCriticScore' },
-  { title: 'HowLongToBeat', align: 'end', key: 'howLongToBeatTime' },
+  {
+    title: 'HowLongToBeat',
+    align: 'end',
+    key: 'howLongToBeatTime',
+  },
   { title: 'Released', align: 'end', key: 'released' },
   { key: 'data-table-expand' },
 ];
@@ -226,7 +230,7 @@ fetchGames();
               <HowLongToBeatTime :game="item.raw" @fetch-games="fetchGames" />
             </td>
             <td>
-              <v-sheet class="text-right">
+              <v-sheet class="text-right text-caption">
                 <v-tooltip
                   activator="parent"
                   location="top"
