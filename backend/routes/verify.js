@@ -25,6 +25,7 @@ module.exports = {
       return {
         isVerified,
         isAdmin: isVerified && userId === ADMIN_USER_ID,
+        userId,
       };
     } catch (e) {
       return e;

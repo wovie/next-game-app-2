@@ -22,7 +22,8 @@ export const useUserStore = defineStore('user', () => {
       (Date.now() - (epoch || 0)) / (1000 * 60 * 60 * 24)
     );
 
-    return daysSinceUpdate > 0 && isAdmin.value;
+    return isAdmin.value;
+    // return daysSinceUpdate > 0 && isAdmin.value;
   }
 
   return { isLoggedIn, isAdmin, setUserCredential, canUpdate };

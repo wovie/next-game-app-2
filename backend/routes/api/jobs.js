@@ -1,4 +1,5 @@
 const express = require('express');
+const _ = require('lodash');
 const verify = require('../verify');
 const { status } = require('../../jobs/jobs');
 
@@ -21,22 +22,15 @@ router.get('/', async (req, res) => {
     // scheduler.stopById('id_2');
     // scheduler.removeById('id_1');
 
-    const { scheduler, openCriticJob, howLongToBeatJob, timestamp } = status;
+    const { scheduler, timestamp, ...jobs } = status;
 
     if (!scheduler) throw new Error('Scheduler not started');
 
-    const result = {
-      openCriticJob: {
-        status: scheduler.getById(openCriticJob.id).getStatus(),
-        nextRun: nextRun(openCriticJob.interval, timestamp),
-      },
-      howLongToBeatJob: {
-        status: scheduler.getById(howLongToBeatJob.id).getStatus(),
-        nextRun: nextRun(howLongToBeatJob.interval, timestamp),
-      },
-    };
-
-    res.status(200).send(result);
+    res.status(200).send(_.map(jobs, (j) => ({
+      id: j.id,
+      status: scheduler.getById(j.id).getStatus(),
+      nextRun: nextRun(j.interval, timestamp),
+    })));
   } catch (e) {
     res.status(500).json(e.message);
   }

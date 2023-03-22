@@ -18,6 +18,10 @@ const status = {
     id: HLTB_JOB_ID,
     interval: hltb.interval,
   },
+  openCriticPopularJob: {
+    id: OC_POPULAR_JOB_ID,
+    interval: ocPopular.interval,
+  },
 };
 
 function logDividers(title) {

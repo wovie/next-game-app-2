@@ -2,19 +2,33 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
+import { useFilterStore } from '@/stores/filter';
 import MainDeck from './components/MainDeck.vue';
+import AdminNavDrawer from './components/AdminNavDrawer.vue';
+import DecksNavDrawer from './components/DecksNavDrawer.vue';
+import FiltersDrawer from './components/FiltersDrawer.vue';
 
-const drawer = ref(true);
-const rail = ref(true);
-const open = ref([]);
+const railDrawer = ref(true);
+const navDrawer = ref(false);
+const navSelect = ref('');
 const userStore = useUserStore();
+const filterStore = useFilterStore();
 let interceptor: number = -1;
-let gTimeout = 100;
+const GOOGLE_TIMEOUT = 100;
+const LOGO_SIZE = 28;
 
 const footerLinks = [
-  { name: 'RAWG', link: 'https://rawg.io/' },
-  { name: 'OpenCritic', link: 'https://opencritic.com/' },
-  { name: 'HowLongToBeat', link: 'https://howlongtobeat.com/' },
+  { name: 'RAWG', link: 'https://rawg.io/', logo: 'rawgLogo.jpg' },
+  {
+    name: 'OpenCritic',
+    link: 'https://opencritic.com/',
+    logo: 'openCriticLogo.jpg',
+  },
+  {
+    name: 'HowLongToBeat',
+    link: 'https://howlongtobeat.com/',
+    logo: 'howLongToBeatLogo.png',
+  },
 ];
 
 window.onload = function () {
@@ -24,30 +38,31 @@ window.onload = function () {
     callback: login,
     auto_select: true,
   });
-  renderGoogleButton(document.getElementById('google_sign_in'));
+  renderGoogleButton();
 };
 
-function renderGoogleButton(element: HTMLElement | null) {
+function renderGoogleButton(timeout: number | void) {
+  const element = document.getElementById('google_sign_in');
   if (element === null) {
-    gTimeout = gTimeout * 3;
-    setTimeout(() => {
-      renderGoogleButton(document.getElementById('google_sign_in'));
-    }, gTimeout);
+    setTimeout(renderGoogleButton, timeout ? timeout * 3 : GOOGLE_TIMEOUT);
   }
 
   if (google) {
+    const theme = userStore.isLoggedIn ? 'filled_blue' : 'filled_black';
     google.accounts.id.renderButton(element as HTMLElement, {
       type: 'icon',
-      theme: 'filled_black',
+      theme,
       size: 'large',
       shape: 'circle',
     });
   }
 }
 
-function login(response: any) {
+async function login(response: any) {
+  goHome();
   const { credential } = response;
-  userStore.setUserCredential(credential);
+  await userStore.setUserCredential(credential);
+  renderGoogleButton();
 
   if (interceptor > -1) axios.interceptors.request.eject(interceptor);
 
@@ -63,34 +78,52 @@ function login(response: any) {
 }
 
 function goHome() {
-  console.log('goHome');
-  rail.value = true;
-  open.value.length = 0;
+  navDrawer.value = false;
+  navSelect.value = 'HOME';
 }
 
 function goDecks() {
-  console.log('goDecks');
-  rail.value = false;
+  navDrawer.value = true;
+  navSelect.value = 'DECKS';
 }
 
 function goAdmin() {
-  console.log('goAdmin');
-  rail.value = false;
+  if (!userStore.isAdmin) return goHome();
+
+  navDrawer.value = true;
+  navSelect.value = 'ADMIN';
 }
 
-renderGoogleButton(document.getElementById('google_sign_in'));
+function navDrawerUpdated() {
+  if (!navDrawer.value) goHome();
+}
+
+function logoUrl(logo: string) {
+  return new URL(`./assets/${logo}`, import.meta.url).href;
+}
+
+function filtersDrawerUpdated() {
+  if (!filterStore.showDrawer) filterStore.applyFilters();
+}
+
+renderGoogleButton();
+goHome();
 
 function todos() {
   const todos = [
-    'Move addGame() to nav drawer',
-    'Add filters to MainDeck',
+    'Refactor table to accept games as prop',
     'Add user decks',
-    'Add jobs: 90+, 80+',
+    'Add table filters',
+    'Prettify job status',
+    'Add OC jobs: 90+, 80+',
     'Branding: OnDeck',
     'Add ITAD data',
     'Add Steam Deck data',
     'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'New solution for jobs (Render free plan sleeps)',
+    'Phase out RAWG',
+    'More loaders, animations',
+    'Clean up Platform.ts and PlatformChips.vue',
   ];
 
   if (todos.length) {
@@ -103,49 +136,79 @@ todos();
 
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" permanent :rail="rail" floating>
+    <v-navigation-drawer
+      v-model="filterStore.showDrawer"
+      temporary
+      location="top"
+      @update:model-value="filtersDrawerUpdated()"
+    >
+      <FiltersDrawer />
+    </v-navigation-drawer>
+
+    <v-navigation-drawer
+      v-model="railDrawer"
+      permanent
+      rail
+      floating
+      class="py-2"
+    >
       <v-list-item nav class="justify-center">
         <div id="google_sign_in" />
       </v-list-item>
 
-      <v-list nav v-model:opened="open">
+      <v-list nav>
         <v-list-item
           prepend-icon="mdi-home-outline"
-          value="main"
+          value="HOME"
+          :active="navSelect === 'HOME'"
           @click="goHome()"
-          title="Home"
         />
-
-        <v-list-group value="decks">
-          <template v-slot:activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              prepend-icon="mdi-playlist-star"
-              :disabled="!userStore.isLoggedIn"
-              @click="goDecks()"
-              title="Decks"
-            />
-          </template>
-          <v-list-item>
-            Deck 1
-          </v-list-item>
-        </v-list-group>
-
-        <v-list-group value="admin">
-          <template v-slot:activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              prepend-icon="mdi-shield-crown-outline"
-              v-if="userStore.isAdmin"
-              @click="goAdmin()"
-              title="Admin"
-            />
-          </template>
-          <v-list-item>
-            Admin 1
-          </v-list-item>
-        </v-list-group>
+        <v-list-item
+          prepend-icon="mdi-playlist-star"
+          :disabled="!userStore.isLoggedIn"
+          value="DECKS"
+          :active="navSelect === 'DECKS'"
+          @click="goDecks()"
+        />
+        <v-list-item
+          prepend-icon="mdi-shield-crown-outline"
+          v-if="userStore.isAdmin"
+          value="ADMIN"
+          :active="navSelect === 'ADMIN'"
+          @click="goAdmin()"
+        />
       </v-list>
+
+      <template v-slot:append>
+        <div class="d-flex flex-column align-center" :style="{ gap: '0.5rem' }">
+          <a
+            v-for="link in footerLinks"
+            :key="link.name"
+            :href="link.link"
+            target="_blank"
+          >
+            <v-sheet
+              rounded="circle"
+              class="footer-logo"
+              :style="{
+                backgroundImage: `url(${logoUrl(link.logo)})`,
+                width: `${LOGO_SIZE}px`,
+                height: `${LOGO_SIZE}px`,
+              }"
+            />
+          </a>
+        </div>
+      </template>
+    </v-navigation-drawer>
+
+    <v-navigation-drawer
+      v-model="navDrawer"
+      temporary
+      @update:model-value="navDrawerUpdated()"
+      width="384"
+    >
+      <DecksNavDrawer v-if="navSelect === 'DECKS'" />
+      <AdminNavDrawer v-if="navSelect === 'ADMIN'" @go-home="goHome" />
     </v-navigation-drawer>
 
     <v-main>
@@ -153,26 +216,19 @@ todos();
         <MainDeck />
       </v-container>
     </v-main>
-    <v-footer :style="{ flexGrow: 0 }">
-      <v-row class="d-flex justify-end align-center" no-gutters>
-        <v-btn
-          v-for="link in footerLinks"
-          :key="link.name"
-          size="small"
-          :href="link.link"
-          target="_blank"
-          variant="text"
-          class="font-weight-black"
-        >
-          {{ link.name }}
-        </v-btn>
-      </v-row>
-    </v-footer>
   </v-app>
 </template>
 
 <style>
 .link {
   cursor: pointer;
+}
+</style>
+
+<style scoped>
+.footer-logo {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 </style>

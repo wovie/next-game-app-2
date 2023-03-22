@@ -69,7 +69,7 @@ async function updateTimestamp(game: Game) {
                 label="OpenCritic"
                 v-model="openCriticId"
                 variant="outlined"
-                v-if="game.released && Date.now() - game.released > 0"
+                v-if="game.openCriticScore"
                 :readonly="!userStore.isAdmin"
                 :loading="loadingOpenCritic"
               >
@@ -82,6 +82,7 @@ async function updateTimestamp(game: Game) {
                     target="_blank"
                     class="text-caption pa-0 text-primary"
                     @click="updateTimestamp(game)"
+                    v-if="game.openCriticUrl"
                     >{{ game.openCriticUrl }}
                   </v-btn>
                 </template>

@@ -25,6 +25,7 @@ module.exports = {
         endOfLine: 'auto',
       },
     ],
+    'vue/valid-v-slot': 0,
   },
   globals: {
     google: 'writeable',

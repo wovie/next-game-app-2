@@ -7,6 +7,7 @@ const router = express.Router();
 
 async function updateGame(game) {
   const { _id, ...rest } = game;
+
   const games = mdb.getCollection('games');
   return games.updateOne(
     { _id: new ObjectId(_id) },
@@ -15,11 +16,12 @@ async function updateGame(game) {
 }
 
 async function addGame(game) {
-  const games = mdb.getCollection('games');
   const { _id, ...rest } = game;
   const query = { id: game.id };
   const replacement = rest;
   const options = { upsert: true };
+
+  const games = mdb.getCollection('games');
   return games.replaceOne(query, replacement, options);
 }
 

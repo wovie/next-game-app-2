@@ -24,6 +24,7 @@ app.use('/api/oc', oc.router);
 app.use('/api/rawg', rawg.router);
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/jobs', require('./routes/api/jobs'));
+app.use('/api/decks', require('./routes/api/decks'));
 
 console.log('TODO: explore express global error handling');
 // Global error handling

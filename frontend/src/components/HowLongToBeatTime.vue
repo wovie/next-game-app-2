@@ -67,11 +67,12 @@ async function updateTime(game: any) {
         </v-tooltip>
       </v-sheet>
       <v-progress-linear
-        color="info"
+        color="#287fc2"
         indeterminate
         rounded
         v-if="loading"
         height="2"
+        class="hltb-loader"
       ></v-progress-linear>
     </v-col>
   </v-row>
@@ -91,5 +92,11 @@ async function updateTime(game: any) {
 
 .hltb > span {
   min-width: 33%;
+}
+
+.hltb-loader {
+  width: 130px;
+  left: unset !important;
+  transform: unset !important;
 }
 </style>

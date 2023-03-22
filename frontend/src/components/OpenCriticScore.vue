@@ -31,7 +31,10 @@ async function updateScore(game: any) {
         :class="{
           link: userStore.canUpdate(props.game.openCriticScoreUpdated),
         }"
-        v-if="!loading && props.game.openCriticScore"
+        v-if="
+          !loading &&
+          (props.game.openCriticScore || Date.now() - props.game.released > 0)
+        "
         @click="updateScore(props.game)"
         border
         class="d-flex justify-center align-center oc"
@@ -63,7 +66,7 @@ async function updateScore(game: any) {
       </v-sheet>
       <v-progress-circular
         indeterminate
-        color="info"
+        color="#2e2e2e"
         v-if="loading"
         :size="CIRCLE_SIZE"
         width="2"

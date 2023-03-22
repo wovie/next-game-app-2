@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const _ = require('lodash');
 const { OPENCRITIC_KEY } = require('../../config');
 const verify = require('../verify');
 const games = require('./games');
@@ -31,7 +32,7 @@ async function getData(game) {
     const { name } = game;
     let { openCriticId } = game;
     if (!openCriticId && name) {
-      const result = await search(game.name);
+      const result = await search(name);
       if (result && result[0] && result[0].dist === 0) {
         openCriticId = result[0].id;
       } else {
@@ -48,9 +49,16 @@ async function getData(game) {
       openCriticScore: Math.round(data.topCriticScore),
       openCriticUrl: data.url,
       openCriticScoreUpdated: Date.now(),
+      name: data.name,
+      platforms: _.map(data.Platforms, (p) => ({
+        name: p.name,
+        shortName: p.shortName,
+        id: p.id,
+      })),
+      released: Date.parse(data.firstReleaseDate),
     });
   } catch (e) {
-    throw new Error(e.response.data.message);
+    throw new Error(e.response.data.message || e.response.data.messages);
   }
 }
 

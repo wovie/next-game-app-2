@@ -11,17 +11,25 @@ const props = defineProps<{
 
 const platforms: Ref<Platform[]> = ref([]);
 
+// const relevantPlatforms: Platform[] = [
+//   { id: 4, name: 'PC', shortName: 'PC' },
+//   { id: 7, name: 'Nintendo Switch', shortName: 'Switch' },
+//   { id: 187, name: 'PlayStation 5', shortName: 'PS5' },
+//   // { id: 1, name: 'Xbox One' },
+//   // { id: 18, name: 'PlayStation 4' },
+//   // { id: 186, name: 'Xbox Series S/X' },
+// ];
+
 const relevantPlatforms: Platform[] = [
-  { id: 4, name: 'PC', short: 'PC' },
-  { id: 7, name: 'Nintendo Switch', short: 'Switch' },
-  { id: 187, name: 'PlayStation 5', short: 'PS5' },
-  // { id: 1, name: 'Xbox One' },
-  // { id: 18, name: 'PlayStation 4' },
-  // { id: 186, name: 'Xbox Series S/X' },
+  { id: 27, name: 'PC', shortName: 'PC' },
+  { id: 32, name: 'Nintendo Switch', shortName: 'Switch' },
+  { id: 3, name: 'PlayStation 5', shortName: 'PS5' },
+  // { id: 6, name: 'PlayStation 4' },
+  // { id: 2, name: 'Xbox Series X/S', shortName:'XBXS' },
 ];
 
 platforms.value = _.filter(props.game.platforms, (p: Platform) => {
-  return _.map(relevantPlatforms, 'id').indexOf(p.id) > -1;
+  return _.map(relevantPlatforms, 'name').indexOf(p.name) > -1;
 });
 </script>
 
@@ -45,7 +53,7 @@ platforms.value = _.filter(props.game.platforms, (p: Platform) => {
     {{
       _.map(
         platforms,
-        (p) => _.find(relevantPlatforms, { id: p.id })!.short
+        (p) => _.find(relevantPlatforms, { name: p.name })!.shortName
       ).join(', ')
     }}
   </div>
