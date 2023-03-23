@@ -35,7 +35,7 @@ async function deleteDeck() {
                   density="compact"
                   clearable
                   hide-details
-                  label="Game name"
+                  label="Name"
                 />
               </v-form>
             </v-col>

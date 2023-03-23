@@ -8,6 +8,7 @@ import { DEBUG_LOADING } from '../util/debug';
 import type Game from '../props/Game';
 import GameService from '../services/GameService';
 import { useGameStore } from '@/stores/game';
+import OpenCriticService from '@/services/OpenCriticService';
 
 const tabs = ref(null);
 const jobs: Ref<any[]> = ref([]);
@@ -19,6 +20,7 @@ const searchResults: Ref<Game[]> = ref([]);
 const page = ref(1);
 const gameStore = useGameStore();
 const emit = defineEmits(['goHome']);
+const limits: any = ref({});
 
 async function jobStatus() {
   jobs.value = await JobService.status();
@@ -75,7 +77,19 @@ async function addGame(game: Game) {
   // should close drawer > set adding flag > call fetchGames
 }
 
+async function ocLimits() {
+  const result = await OpenCriticService.limits();
+  limits.value = result;
+}
+
+function convertSeconds(seconds: number) {
+  const hours = seconds / 60 / 60;
+  const minutes = (hours % 1) * 60;
+  return `${Math.floor(hours)} hours ${Math.floor(minutes)} minutes`;
+}
+
 jobStatus();
+ocLimits();
 </script>
 
 <template>
@@ -157,6 +171,16 @@ jobStatus();
         <div v-for="job in jobs" :key="job.id">
           {{ `${job.id}, ${job.nextRun}` }}
         </div>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-text>
+        <div>
+          Searches {{ `${limits.searchesRemaining}/${limits.searchesLimit}` }}
+        </div>
+        <div>
+          Requests {{ `${limits.requestsRemaining}/${limits.requestsLimit}` }}
+        </div>
+        <div>Reset {{ convertSeconds(limits.reset) }}</div>
       </v-card-text>
     </v-window-item>
   </v-window>

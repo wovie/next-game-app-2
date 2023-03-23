@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, toRaw } from 'vue';
 import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import _ from 'lodash';
@@ -21,6 +21,7 @@ export const useDeckStore = defineStore('deck', () => {
     const deck = _.find(decks.value, { _id }) as Deck;
     deck.selected = !deck.selected;
     DeckService.updateDeck(deck);
+    console.log(toRaw(deck));
   }
 
   function viewDecks() {

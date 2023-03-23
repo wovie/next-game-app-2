@@ -80,6 +80,29 @@ router.post('/data', async (req, res) => {
   }
 });
 
+router.get('/limits', async (req, res) => {
+  try {
+    const v = await verify.req(req);
+    if (!v.isAdmin) throw new Error('Unauthorized');
+
+    const result = await getGame();
+    const searchesLimit = result.headers['x-ratelimit-searches-limit'];
+    const searchesRemaining = result.headers['x-ratelimit-searches-remaining'];
+    const requestsLimit = result.headers['x-ratelimit-requests-limit'];
+    const requestsRemaining = result.headers['x-ratelimit-requests-remaining'];
+    const reset = result.headers['x-ratelimit-requests-reset'];
+    res.status(200).send({
+      searchesLimit,
+      searchesRemaining,
+      requestsLimit,
+      requestsRemaining,
+      reset,
+    });
+  } catch (e) {
+    res.status(500).json(e.message);
+  }
+});
+
 module.exports = {
   router,
   methods: {

@@ -19,9 +19,6 @@ router.get('/', async (req, res) => {
     const v = await verify.req(req);
     if (!v.isAdmin) throw new Error('Unauthorized');
 
-    // scheduler.stopById('id_2');
-    // scheduler.removeById('id_1');
-
     const { scheduler, timestamp, ...jobs } = status;
 
     if (!scheduler) throw new Error('Scheduler not started');

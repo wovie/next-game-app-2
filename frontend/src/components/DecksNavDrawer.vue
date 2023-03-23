@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import _ from 'lodash';
 import DeckService from '../services/DeckService';
 import { useDeckStore } from '@/stores/deck';
+import type Deck from '../props/Deck';
 
 const deckStore = useDeckStore();
 const deckName = ref('');
@@ -11,6 +12,7 @@ const emit = defineEmits(['goDecks']);
 
 async function addDeck() {
   await DeckService.addDeck({
+    _id: '',
     name: deckName.value,
     gameIds: [],
   });
@@ -23,9 +25,23 @@ function clearSearch() {
 }
 
 function viewDecks() {
-  // ensure sorting here
   deckStore.viewDecks();
   emit('goDecks', false);
+}
+
+async function changeSort(deck: Deck, dir: number) {
+  const { sort } = deck;
+  const swapDeck = _.find(deckStore.decks, { sort: deck.sort! - dir });
+
+  if (!swapDeck) return;
+
+  deck.sort = swapDeck.sort;
+  swapDeck.sort = sort;
+
+  await DeckService.updateDeck(deck);
+  await DeckService.updateDeck(swapDeck);
+
+  deckStore.getDecks();
 }
 </script>
 
@@ -40,20 +56,42 @@ function viewDecks() {
         density="compact"
         variant="outlined"
         label="Make a new deck"
-        prepend-inner-icon="mdi-playlist-plus"
+        prepend-inner-icon="mdi-playlist-play"
         @click:clear="clearSearch"
       ></v-text-field>
     </v-form>
-    <v-list density="compact" variant="flat">
+    <v-list variant="flat">
       <v-list-item
         v-for="deck in deckStore.decks"
         :key="deck._id"
-        link
-        prepend-icon="mdi-playlist-play"
-        @click="deckStore.toggleDeck(deck._id)"
-        :active="deck.selected"
-        active-color="info"
+        :class="{ selected: deck.selected }"
       >
+        <template v-slot:prepend>
+          <v-btn
+            @click="deckStore.toggleDeck(deck._id)"
+            :icon="deck.selected ? 'mdi-playlist-minus' : 'mdi-playlist-plus'"
+            density="comfortable"
+            class="mr-2"
+            :color="deck.selected ? 'primary' : ''"
+          >
+          </v-btn>
+        </template>
+        <template v-slot:append>
+          <v-btn
+            icon="mdi-arrow-up-thin"
+            variant="text"
+            density="comfortable"
+            :disabled="deck.sort === 1"
+            @click="changeSort(deck, 1)"
+          ></v-btn>
+          <v-btn
+            icon="mdi-arrow-down-thin"
+            variant="text"
+            density="comfortable"
+            :disabled="deck.sort === deckStore.decks.length"
+            @click="changeSort(deck, -1)"
+          ></v-btn>
+        </template>
         {{ `${deck.name} (${deck.gameIds ? deck.gameIds.length : 0})` }}
       </v-list-item>
     </v-list>
@@ -68,3 +106,9 @@ function viewDecks() {
     </v-btn>
   </v-card-text>
 </template>
+
+<style scoped>
+.selected {
+  font-weight: 600;
+}
+</style>

@@ -124,18 +124,16 @@ goHome();
 
 function todos() {
   const todos = [
-    'Decks: Sort',
+    'Unreleased games dont get OC data (Phase out RAWG)',
+    'Import Mighties',
     'Finish filters',
     'Prettify job status',
-    'Add OC jobs: 90+, 80+',
     'Branding: OnDeck',
     'Add ITAD data',
     'Add Steam Deck data',
     'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'New solution for jobs (Render free plan sleeps)',
-    'Phase out RAWG',
     'More loaders, animations',
-    'Clean up Platform.ts and PlatformChips.vue',
   ];
 
   if (todos.length) {

@@ -30,4 +30,5 @@ module.exports = {
   globals: {
     google: 'writeable',
   },
+  ignorePatterns: ['node_modules', 'dist'],
 };

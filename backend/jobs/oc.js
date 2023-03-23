@@ -13,9 +13,9 @@ async function checkLimits() {
   try {
     const result = await oc.methods.getGame();
     const { headers } = result;
-    const limit = headers['x-ratelimit-requests-limit']; // 200
-    const remaining = headers['x-ratelimit-requests-remaining']; // <200
-    const reset = headers['x-ratelimit-requests-reset']; // seconds until 2pm EST
+    const limit = headers['x-ratelimit-requests-limit'];
+    const remaining = headers['x-ratelimit-requests-remaining'];
+    const reset = headers['x-ratelimit-requests-reset'];
     const intervalSeconds = interval * 60 * 60;
     const buffer = 20;
 

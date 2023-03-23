@@ -12,6 +12,15 @@ class OpenCriticService {
       console.error(e.response.data);
     }
   }
+
+  static async limits() {
+    try {
+      const result = await axios.get(`${url}limits`);
+      return result.data;
+    } catch (e: any) {
+      console.error(e.response.data);
+    }
+  }
 }
 
 export default OpenCriticService;
