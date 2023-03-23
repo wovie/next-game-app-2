@@ -5,12 +5,13 @@ import WhenUpdated from './WhenUpdated.vue';
 import UpdateNow from './UpdateNow.vue';
 import { useUserStore } from '@/stores/user';
 import { DEBUG_LOADING } from '../util/debug';
+import { useGameStore } from '@/stores/game';
 
 const props = defineProps(['game']);
-const emit = defineEmits(['fetchGames']);
 
 const loading = ref(false);
 const userStore = useUserStore();
+const gameStore = useGameStore();
 
 const CIRCLE_SIZE = '44';
 
@@ -19,7 +20,7 @@ async function updateScore(game: any) {
   if (!userStore.canUpdate(game.openCriticScoreUpdated)) return;
   loading.value = true;
   await OpenCriticService.data(game);
-  emit('fetchGames');
+  gameStore.fetchGames();
   loading.value = false;
 }
 </script>

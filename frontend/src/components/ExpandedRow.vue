@@ -1,29 +1,35 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import type { Ref } from 'vue';
+import _ from 'lodash';
 import GameService from '../services/GameService';
 import OpenCriticService from '../services/OpenCriticService';
 import HowLongToBeatService from '../services/HowLongToBeatService';
 import type Game from '../props/Game';
+import type Deck from '../props/Deck';
 import { useUserStore } from '@/stores/user';
 import WhenUpdated from '../components/WhenUpdated.vue';
+import { useGameStore } from '@/stores/game';
+import { useDeckStore } from '@/stores/deck';
+import DeckService from '@/services/DeckService';
 
 const props = defineProps<{
   game: Game;
   columns: any;
 }>();
 const userStore = useUserStore();
+const deckStore = useDeckStore();
 const openCriticId = ref(props.game.openCriticId);
 const howLongToBeatId = ref(props.game.howLongToBeatId);
 const loadingOpenCritic = ref(false);
 const loadingHowLongToBeat = ref(false);
-const emit = defineEmits(['fetchGames']);
 const howLongToBeatUrl = `https://howlongtobeat.com/game/${props.game.howLongToBeatId}`;
-const decks = ['Playing', 'PC', 'Switch'];
-const inDecks = ref([]);
+const inDecks: Ref<string[]> = ref([]);
+const gameStore = useGameStore();
 
 async function deleteGame(id: string) {
   await GameService.deleteGame(id);
-  emit('fetchGames');
+  gameStore.fetchGames();
 }
 
 async function changeOpenCriticId() {
@@ -34,7 +40,7 @@ async function changeOpenCriticId() {
     openCriticId: Number(openCriticId.value),
   });
   loadingOpenCritic.value = false;
-  emit('fetchGames');
+  gameStore.fetchGames();
 }
 
 async function changeHowLongToBeatId() {
@@ -45,7 +51,7 @@ async function changeHowLongToBeatId() {
     howLongToBeatId: Number(howLongToBeatId.value),
   });
   loadingHowLongToBeat.value = false;
-  emit('fetchGames');
+  gameStore.fetchGames();
 }
 
 async function updateTimestamp(game: Game) {
@@ -53,8 +59,51 @@ async function updateTimestamp(game: Game) {
 
   const { _id } = game;
   await GameService.updateGame({ _id, timestamp: Date.now() });
-  emit('fetchGames', true);
+  console.log('keepExpanded was here');
+  gameStore.fetchGames();
 }
+
+async function updateInDecks() {
+  let changeDeck: Deck | undefined = undefined;
+
+  deckStore.decks.forEach((d: Deck) => {
+    const deckId = d._id!;
+    const gameId = props.game._id;
+
+    if (inDecks.value.indexOf(deckId) !== -1) {
+      if (d.gameIds.indexOf(gameId) === -1) {
+        d.gameIds.push(gameId);
+        changeDeck = d;
+      }
+    } else {
+      const i = d.gameIds.indexOf(gameId);
+      if (i !== -1) {
+        d.gameIds.splice(i, 1);
+        changeDeck = d;
+      }
+    }
+  });
+
+  if (!changeDeck) return;
+
+  await DeckService.updateDeck(changeDeck);
+  await deckStore.getDecks();
+}
+
+function buildInDecks() {
+  inDecks.value.length = 0;
+
+  _.map(
+    _.filter(deckStore.decks, (d: Deck) => {
+      return d.gameIds && d.gameIds.indexOf(props.game._id) !== -1;
+    }),
+    '_id'
+  ).forEach((id) => {
+    inDecks.value.push(id!);
+  });
+}
+
+buildInDecks();
 </script>
 
 <template>
@@ -115,16 +164,19 @@ async function updateTimestamp(game: Game) {
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="5">
-            <v-combobox
+            <v-select
               v-model="inDecks"
-              :items="decks"
-              label="Select some decks"
+              :items="deckStore.decks"
+              label="Send to a deck"
               multiple
               hide-details
               density="compact"
               variant="solo"
               :disabled="!userStore.isLoggedIn"
-            ></v-combobox>
+              item-title="name"
+              item-value="_id"
+              @update:model-value="updateInDecks"
+            ></v-select>
           </v-col>
         </v-row>
         <v-row class="mt-0" align="center">

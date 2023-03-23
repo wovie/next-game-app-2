@@ -1,28 +1,44 @@
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
+import _ from 'lodash';
 import type Deck from '../props/Deck';
-// import GameService from '../services/GameService';
+import DeckService from '../services/DeckService';
 
 export const useDeckStore = defineStore('deck', () => {
   const decks: Ref<Deck[]> = ref([]);
+  const show = ref(false);
 
-  // async function fetchGames() {
-  //   const result = await GameService.getGames();
-  //   games.length = 0;
-  //   result.forEach((r: Game) => {
-  //     games.push(r);
-  //   });
-  // }
+  async function getDecks() {
+    const result = await DeckService.getDecks();
+    decks.value.length = 0;
+    result.forEach((r: Deck) => {
+      decks.value.push(r);
+    });
+  }
 
-  function toggleDeck(deck: Deck) {
-    const i = decks.value.indexOf(deck);
-    if (i === -1) {
-      decks.value.push(deck);
-    } else {
-      decks.value.splice(i, 1);
+  function toggleDeck(_id: string) {
+    const deck = _.find(decks.value, { _id }) as Deck;
+    deck.selected = !deck.selected;
+    DeckService.updateDeck(deck);
+  }
+
+  function viewDecks() {
+    if (_.findIndex(decks.value, 'selected') !== -1) {
+      show.value = true;
     }
   }
 
-  return { decks, toggleDeck };
+  function selectedDecks() {
+    return _.filter(decks.value, { selected: true });
+  }
+
+  return {
+    decks,
+    toggleDeck,
+    getDecks,
+    viewDecks,
+    show,
+    selectedDecks,
+  };
 });

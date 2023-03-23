@@ -1,17 +1,23 @@
 <script setup lang="ts">
-import { reactive, ref, toRaw } from 'vue';
+import { reactive, toRaw } from 'vue';
 import _ from 'lodash';
+import type Game from '../props/Game';
 import OpenCriticScore from './OpenCriticScore.vue';
 import HowLongToBeatTime from './HowLongToBeatTime.vue';
 import WhenReleasing from './WhenReleasing.vue';
 import PlatformChips from './PlatformChips.vue';
 import ExpandedRow from './ExpandedRow.vue';
-import type Game from '../props/Game';
+import { useSettingsStore } from '@/stores/settings';
 import { useGameStore } from '@/stores/game';
-import { useFilterStore } from '@/stores/filter';
+import type Deck from '@/props/Deck';
+
+const props = defineProps<{
+  deck: Deck;
+}>();
 
 const gameStore = useGameStore();
-const filterStore = useFilterStore();
+const settingsStore = useSettingsStore();
+const expanded: string[] = reactive([]);
 
 const headers = [
   { title: 'Name', align: 'start', key: 'name' },
@@ -25,14 +31,6 @@ const headers = [
   { title: 'Released', align: 'end', key: 'released' },
   { key: 'data-table-expand' },
 ];
-
-const expanded: string[] = reactive([]);
-const adding = ref(false);
-
-async function fetchGames(keepExpanded?: boolean) {
-  gameStore.fetchGames();
-  if (!keepExpanded) expanded.length = 0;
-}
 
 function formatDate(epoch: number) {
   const date = new Date(epoch);
@@ -57,18 +55,23 @@ function isExpanded(game: Game) {
 }
 
 function dataTableItems() {
-  if (!filterStore.run) return gameStore.games;
+  const games = _.filter(
+    gameStore.games,
+    (g) => props.deck.gameIds?.indexOf(g._id) !== -1
+  );
 
-  return _.filter(gameStore.games, (g: Game) => {
+  if (!settingsStore.run) return games;
+
+  // TODO clean this up
+  if (!settingsStore.searchTitle) return games;
+
+  return _.filter(games, (g: Game) => {
     return (
-      g
-        .name!.toLocaleLowerCase()
-        .indexOf(filterStore.searchTitle.toLocaleLowerCase()) !== -1
+      g.name!.toLowerCase().indexOf(settingsStore.searchTitle.toLowerCase()) !==
+      -1
     );
   });
 }
-
-fetchGames();
 </script>
 
 <template>
@@ -80,33 +83,30 @@ fetchGames();
       item-value="_id"
       item-title="name"
       show-expand
-      class="text-body-2 main-deck"
+      class="text-body-2 single-deck"
       :expanded="expanded"
     >
       <template v-slot:top>
-        <v-progress-linear
-          color="info"
-          indeterminate
-          rounded
-          v-if="adding"
-        ></v-progress-linear>
-      </template>
-
-      <template v-slot:column.data-table-expand>
-        <v-btn
-          icon="mdi-filter-cog"
-          @click="filterStore.showFilters()"
-          density="comfortable"
-          :color="filterStore.run ? 'primary' : ''"
-        />
+        <v-toolbar
+          flat
+          density="compact"
+          color="blue-grey"
+          v-if="props.deck.name"
+        >
+          <v-toolbar-title>{{ props.deck.name }}</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn
+            icon="mdi-playlist-edit"
+            @click="settingsStore.showSettings(props.deck)"
+            density="comfortable"
+            :color="settingsStore.run ? 'primary' : ''"
+            variant="tonal"
+          />
+        </v-toolbar>
       </template>
 
       <template v-slot:expanded-row="{ columns, item }">
-        <ExpandedRow
-          :columns="columns"
-          :game="item.raw"
-          @fetch-games="fetchGames"
-        />
+        <ExpandedRow :columns="columns" :game="item.raw" />
       </template>
 
       <template v-slot:item="{ item }">
@@ -118,10 +118,10 @@ fetchGames();
             <td>{{ item.columns.name }}</td>
             <td><PlatformChips :game="item.raw" /></td>
             <td>
-              <OpenCriticScore :game="item.raw" @fetch-games="fetchGames" />
+              <OpenCriticScore :game="item.raw" />
             </td>
             <td>
-              <HowLongToBeatTime :game="item.raw" @fetch-games="fetchGames" />
+              <HowLongToBeatTime :game="item.raw" />
             </td>
             <td>
               <v-sheet class="text-right text-caption">
@@ -154,11 +154,7 @@ fetchGames();
 </template>
 
 <style>
-.main-deck .v-table__wrapper {
+.single-deck .v-table__wrapper {
   overflow: hidden !important;
-}
-
-.main-deck th:last-child {
-  text-align: center !important;
 }
 </style>

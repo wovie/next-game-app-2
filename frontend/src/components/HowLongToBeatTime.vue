@@ -4,19 +4,20 @@ import HowLongToBeatService from '../services/HowLongToBeatService';
 import UpdateNow from './UpdateNow.vue';
 import { useUserStore } from '@/stores/user';
 import { DEBUG_LOADING } from '../util/debug';
+import { useGameStore } from '@/stores/game';
 
 const props = defineProps(['game']);
-const emit = defineEmits(['fetchGames']);
 
 const loading = ref(false);
 const userStore = useUserStore();
+const gameStore = useGameStore();
 
 async function updateTime(game: any) {
   if (DEBUG_LOADING) return (loading.value = true);
   if (!userStore.canUpdate(game.howLongToBeatTimeUpdated)) return;
   loading.value = true;
   await HowLongToBeatService.data(game);
-  emit('fetchGames');
+  gameStore.fetchGames();
   loading.value = false;
 }
 </script>

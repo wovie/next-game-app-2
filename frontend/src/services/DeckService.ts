@@ -21,6 +21,24 @@ class DeckService {
       console.error(e.response.data);
     }
   }
+
+  static async updateDeck(deck: Deck) {
+    try {
+      const result = await axios.put(`${url}update`, deck);
+      return result;
+    } catch (e: any) {
+      console.error(e.response.data);
+    }
+  }
+
+  static async deleteDeck(deck: Deck) {
+    try {
+      const result = await axios.post(`${url}delete`, deck);
+      return result;
+    } catch (e: any) {
+      console.error(e.response.data);
+    }
+  }
 }
 
 export default DeckService;

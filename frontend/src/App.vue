@@ -2,17 +2,20 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
-import { useFilterStore } from '@/stores/filter';
-import MainDeck from './components/MainDeck.vue';
+import { useSettingsStore } from '@/stores/settings';
+import { useDeckStore } from '@/stores/deck';
+import TopDeck from './components/TopDeck.vue';
+import ViewDecks from './components/ViewDecks.vue';
 import AdminNavDrawer from './components/AdminNavDrawer.vue';
 import DecksNavDrawer from './components/DecksNavDrawer.vue';
-import FiltersDrawer from './components/FiltersDrawer.vue';
+import SettingsDrawer from './components/SettingsDrawer.vue';
 
 const railDrawer = ref(true);
 const navDrawer = ref(false);
 const navSelect = ref('');
 const userStore = useUserStore();
-const filterStore = useFilterStore();
+const deckStore = useDeckStore();
+const settingsStore = useSettingsStore();
 let interceptor: number = -1;
 const GOOGLE_TIMEOUT = 100;
 const LOGO_SIZE = 28;
@@ -75,15 +78,18 @@ async function login(response: any) {
       return Promise.reject(error);
     }
   );
+
+  deckStore.getDecks();
 }
 
 function goHome() {
   navDrawer.value = false;
   navSelect.value = 'HOME';
+  deckStore.show = false;
 }
 
-function goDecks() {
-  navDrawer.value = true;
+function goDecks(open: boolean) {
+  navDrawer.value = open;
   navSelect.value = 'DECKS';
 }
 
@@ -95,7 +101,11 @@ function goAdmin() {
 }
 
 function navDrawerUpdated() {
-  if (!navDrawer.value) goHome();
+  if (
+    (!navDrawer.value && !deckStore.show) ||
+    (deckStore.show && deckStore.selectedDecks().length === 0)
+  )
+    goHome();
 }
 
 function logoUrl(logo: string) {
@@ -103,7 +113,10 @@ function logoUrl(logo: string) {
 }
 
 function filtersDrawerUpdated() {
-  if (!filterStore.showDrawer) filterStore.applyFilters();
+  if (!settingsStore.showDrawer) {
+    settingsStore.applyFilters();
+    settingsStore.saveDeck();
+  }
 }
 
 renderGoogleButton();
@@ -111,9 +124,8 @@ goHome();
 
 function todos() {
   const todos = [
-    'Refactor table to accept games as prop',
-    'Add user decks',
-    'Add table filters',
+    'Decks: Sort',
+    'Finish filters',
     'Prettify job status',
     'Add OC jobs: 90+, 80+',
     'Branding: OnDeck',
@@ -137,12 +149,13 @@ todos();
 <template>
   <v-app>
     <v-navigation-drawer
-      v-model="filterStore.showDrawer"
+      v-model="settingsStore.showDrawer"
       temporary
       location="top"
       @update:model-value="filtersDrawerUpdated()"
+      width="384"
     >
-      <FiltersDrawer />
+      <SettingsDrawer />
     </v-navigation-drawer>
 
     <v-navigation-drawer
@@ -168,7 +181,7 @@ todos();
           :disabled="!userStore.isLoggedIn"
           value="DECKS"
           :active="navSelect === 'DECKS'"
-          @click="goDecks()"
+          @click="goDecks(true)"
         />
         <v-list-item
           prepend-icon="mdi-shield-crown-outline"
@@ -207,13 +220,14 @@ todos();
       @update:model-value="navDrawerUpdated()"
       width="384"
     >
-      <DecksNavDrawer v-if="navSelect === 'DECKS'" />
+      <DecksNavDrawer v-if="navSelect === 'DECKS'" @go-decks="goDecks" />
       <AdminNavDrawer v-if="navSelect === 'ADMIN'" @go-home="goHome" />
     </v-navigation-drawer>
 
     <v-main>
       <v-container fluid class="v-col-lg-6">
-        <MainDeck />
+        <TopDeck v-if="!deckStore.show" />
+        <ViewDecks v-if="deckStore.show" />
       </v-container>
     </v-main>
   </v-app>
