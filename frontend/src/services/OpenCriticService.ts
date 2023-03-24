@@ -21,6 +21,19 @@ class OpenCriticService {
       console.error(e.response.data);
     }
   }
+
+  static async search(criteria: string) {
+    try {
+      const result = await axios.get(`${url}search`, {
+        params: {
+          criteria,
+        },
+      });
+      return result.data;
+    } catch (e: any) {
+      console.error(e.response.data);
+    }
+  }
 }
 
 export default OpenCriticService;

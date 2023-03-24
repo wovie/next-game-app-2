@@ -17,12 +17,11 @@ async function updateGame(game) {
 
 async function addGame(game) {
   const { _id, ...rest } = game;
-  const query = { id: game.id };
-  const replacement = rest;
+  const query = { openCriticId: game.openCriticId };
   const options = { upsert: true };
 
   const games = mdb.getCollection('games');
-  return games.replaceOne(query, replacement, options);
+  return games.replaceOne(query, rest, options);
 }
 
 router.get('/', async (req, res) => {

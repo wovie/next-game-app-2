@@ -29,34 +29,25 @@ async function search(criteria) {
 
 async function getData(game) {
   try {
-    const { name } = game;
-    let { openCriticId } = game;
-    if (!openCriticId && name) {
-      const result = await search(name);
-      if (result && result[0] && result[0].dist === 0) {
-        openCriticId = result[0].id;
-      } else {
-        throw new Error('Unable to determine OpenCritic ID');
-      }
-    }
-
+    const { openCriticId } = game;
     const result = await getGame(openCriticId);
     const { data } = result;
 
-    return games.methods.updateGame({
+    game = {
       ...game,
-      openCriticId: data.id,
       openCriticScore: Math.round(data.topCriticScore),
       openCriticUrl: data.url,
       openCriticScoreUpdated: Date.now(),
-      name: data.name,
       platforms: _.map(data.Platforms, (p) => ({
         name: p.name,
         shortName: p.shortName,
         id: p.id,
       })),
       released: Date.parse(data.firstReleaseDate),
-    });
+    };
+
+    await games.methods.updateGame(game);
+    return game;
   } catch (e) {
     throw new Error(e.response.data.message || e.response.data.messages);
   }
@@ -98,6 +89,18 @@ router.get('/limits', async (req, res) => {
       requestsRemaining,
       reset,
     });
+  } catch (e) {
+    res.status(500).json(e.message);
+  }
+});
+
+router.get('/search', async (req, res) => {
+  try {
+    const v = await verify.req(req);
+    if (!v.isAdmin) throw new Error('Unauthorized');
+
+    const result = await search(req.query.criteria);
+    res.status(200).send(result);
   } catch (e) {
     res.status(500).json(e.message);
   }

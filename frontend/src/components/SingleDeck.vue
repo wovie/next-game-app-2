@@ -55,10 +55,13 @@ function isExpanded(game: Game) {
 }
 
 function dataTableItems() {
-  const games = _.filter(
-    gameStore.games,
-    (g) => props.deck.gameIds?.indexOf(g._id) !== -1
-  );
+  const games =
+    props.deck.gameIds.length > 0
+      ? _.filter(
+          gameStore.games,
+          (g) => props.deck.gameIds?.indexOf(g._id) !== -1
+        )
+      : gameStore.games;
 
   if (!settingsStore.run) return games;
 

@@ -18,11 +18,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function canUpdate(epoch: number) {
-    const daysSinceUpdate = Math.floor(
-      (Date.now() - (epoch || 0)) / (1000 * 60 * 60 * 24)
-    );
-
     return isAdmin.value;
+    // const daysSinceUpdate = Math.floor(
+    //   (Date.now() - (epoch || 0)) / (1000 * 60 * 60 * 24)
+    // );
     // return daysSinceUpdate > 0 && isAdmin.value;
   }
 

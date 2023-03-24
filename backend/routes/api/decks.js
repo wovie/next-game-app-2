@@ -71,7 +71,6 @@ router.post('/delete', async (req, res) => {
 
     const adjust = _.filter(result, (d) => d.sort > sort);
 
-    // eslint-disable-next-line no-param-reassign
     adjust.forEach((d) => { d.sort -= 1; });
 
     const decks = mdb.getCollection('decks');

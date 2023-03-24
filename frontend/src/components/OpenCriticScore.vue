@@ -34,7 +34,8 @@ async function updateScore(game: any) {
         }"
         v-if="
           !loading &&
-          (props.game.openCriticScore || Date.now() - props.game.released > 0)
+          (props.game.openCriticScore !== -1 ||
+            Date.now() - props.game.released > 0)
         "
         @click="updateScore(props.game)"
         border

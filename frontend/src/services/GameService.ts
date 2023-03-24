@@ -1,5 +1,4 @@
 import axios from 'axios';
-import _ from 'lodash';
 import OpenCriticService from './OpenCriticService';
 import HowLongToBeatService from './HowLongToBeatService';
 import type Game from '../props/Game';
@@ -18,19 +17,12 @@ class GameService {
 
   static async addGame(game: Game) {
     try {
-      game.released = game.released && Date.parse(game.released.toString());
-
-      game.platforms = _.map(game.platforms, (p: any) => {
-        const { id, name } = p.platform;
-        return { id, name };
-      });
-
       const result = await axios.post(url, game);
+      const { _id } = result.data;
+      game._id = _id;
 
+      game = await OpenCriticService.data(game);
       if (game.released && Date.now() - game.released > 0) {
-        const { _id } = result.data;
-        game._id = _id;
-        await OpenCriticService.data(game);
         await HowLongToBeatService.data(game);
       }
 

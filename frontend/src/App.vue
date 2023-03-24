@@ -124,7 +124,6 @@ goHome();
 
 function todos() {
   const todos = [
-    'Unreleased games dont get OC data (Phase out RAWG)',
     'Import Mighties',
     'Finish filters',
     'Prettify job status',
@@ -134,6 +133,7 @@ function todos() {
     'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'New solution for jobs (Render free plan sleeps)',
     'More loaders, animations',
+    'RAWG: delete id prop from db, delete files, remove footer link',
   ];
 
   if (todos.length) {

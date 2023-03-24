@@ -20,5 +20,6 @@ module.exports = {
     'no-promise-executor-return': 'off',
     'no-underscore-dangle': 'off',
     'no-continue': 'off',
+    'no-param-reassign': 'off',
   },
 };

@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const findGames = require('./findGames');
 const oc = require('../routes/api/oc');
-const rawg = require('../routes/api/rawg');
 const games = require('../routes/api/games');
+const hltb = require('../routes/api/hltb');
 
 const interval = 6; // hours
 const apiRate = 1; // requests per 5 seconds
@@ -20,28 +20,18 @@ async function popularGames() {
 
 async function getData(ocData) {
   try {
-    let rawgResult = await rawg.methods.getGame({
-      search: ocData.name,
-      page_size: 1,
-    });
+    const game = {
+      name: ocData.name,
+      openCriticId: ocData.id,
+      openCriticScore: Math.round(ocData.topCriticScore),
+      openCriticScoreUpdated: Date.now(),
+    };
 
-    if (rawgResult.data.results && rawgResult.data.results[0]) {
-      [rawgResult] = rawgResult.data.results;
-
-      const game = {
-        id: rawgResult.id,
-        name: rawgResult.name,
-        openCriticId: ocData.id,
-        openCriticScore: Math.round(ocData.topCriticScore),
-        openCriticScoreUpdated: Date.now(),
-        platforms:
-          _.map(rawgResult.platforms, (p) => ({ id: p.platform.id, name: p.platform.name })),
-        released: rawgResult.released && Date.parse(rawgResult.released.toString()),
-      };
-
-      const result = await games.methods.addGame(game);
-      console.log('ocPopular getData result:', result);
-    }
+    let result = await games.methods.addGame(game);
+    game._id = result.upsertedId;
+    result = await oc.methods.getData(game);
+    await hltb.methods.getData(game);
+    console.log('ocPopular getData result:', result);
   } catch (e) {
     console.log(e);
   }

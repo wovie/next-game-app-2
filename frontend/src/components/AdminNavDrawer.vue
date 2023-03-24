@@ -3,9 +3,7 @@ import _ from 'lodash';
 import { ref } from 'vue';
 import type { Ref } from 'vue';
 import JobService from '@/services/JobService';
-import RAWGService from '../services/RAWGService';
 import { DEBUG_LOADING } from '../util/debug';
-import type Game from '../props/Game';
 import GameService from '../services/GameService';
 import { useGameStore } from '@/stores/game';
 import OpenCriticService from '@/services/OpenCriticService';
@@ -14,67 +12,60 @@ const tabs = ref(null);
 const jobs: Ref<any[]> = ref([]);
 const searchText = ref('');
 const searching = ref(false);
-const DEFAULT_PAGE_SIZE = 9;
-const MORE_PAGE_SIZE = 9;
-const searchResults: Ref<Game[]> = ref([]);
-const page = ref(1);
+const games: Ref<SearchResult[]> = ref([]);
 const gameStore = useGameStore();
 const emit = defineEmits(['goHome']);
 const limits: any = ref({});
+
+interface SearchResult {
+  id: number;
+  dist: number;
+  name: string;
+}
 
 async function jobStatus() {
   jobs.value = await JobService.status();
 }
 
-async function searchRawg(step: number | null) {
+async function search() {
   searching.value = true;
-  if (step) page.value += step;
 
-  const results = await RAWGService.search({
-    search: searchText.value,
-    page_size: step === null ? DEFAULT_PAGE_SIZE : MORE_PAGE_SIZE,
-    page: page.value,
-  });
-  searchResults.value.length = 0;
+  const results = await OpenCriticService.search(searchText.value);
+  games.value.length = 0;
   results.forEach((r: any) => {
-    searchResults.value.push(r);
+    games.value.push(r);
   });
 
   searching.value = false;
 }
 
 function clearSearch() {
-  searchResults.value.length = 0;
+  games.value.length = 0;
   searchText.value = '';
-  page.value = 1;
 }
 
-async function addGame(game: Game) {
+async function addGame(game: SearchResult) {
   if (DEBUG_LOADING) {
     clearSearch();
     // adding.value = true;
     return;
   }
 
-  const { id } = game;
+  const { id, name } = game;
 
-  if (_.find(gameStore.games, { id })) return;
+  if (_.find(gameStore.games, { openCriticId: id })) return;
 
   emit('goHome');
   // adding.value = true;
   clearSearch();
-  const { _id, name, platforms, released } = game;
   await GameService.addGame({
-    _id,
-    id,
+    _id: '',
+    openCriticId: id,
     name,
-    released,
-    platforms,
   });
   // adding.value = false;
 
   gameStore.fetchGames();
-  // should close drawer > set adding flag > call fetchGames
 }
 
 async function ocLimits() {
@@ -104,7 +95,7 @@ ocLimits();
   <v-window v-model="tabs">
     <v-window-item value="search">
       <v-card-text>
-        <v-form @submit.prevent="searchRawg(null)">
+        <v-form @submit.prevent="search()">
           <v-text-field
             clearable
             @click:clear="clearSearch"
@@ -116,37 +107,9 @@ ocLimits();
             label="Add a new game"
           ></v-text-field>
         </v-form>
-        <v-list v-if="searchResults.length" density="compact">
-          <v-list-subheader>
-            <div class="d-flex align-baseline" :style="{ gap: '1rem' }">
-              <v-btn
-                variant="outlined"
-                size="x-small"
-                @click="searchRawg(0)"
-                v-show="searchResults.length < MORE_PAGE_SIZE"
-                >MORE
-              </v-btn>
-              <v-btn
-                variant="outlined"
-                size="x-small"
-                @click="searchRawg(-1)"
-                v-show="page > 1"
-                >PREV
-              </v-btn>
-              <v-btn
-                variant="outlined"
-                size="x-small"
-                @click="searchRawg(1)"
-                v-show="searchResults.length === MORE_PAGE_SIZE"
-                >NEXT
-              </v-btn>
-              <v-btn variant="outlined" size="x-small" @click="clearSearch"
-                >CLEAR
-              </v-btn>
-            </div>
-          </v-list-subheader>
+        <v-list v-if="games.length" density="compact">
           <v-list-item
-            v-for="(game, index) in searchResults"
+            v-for="game in games"
             :key="game.id"
             :title="game.name"
             @click="addGame(game)"
@@ -154,14 +117,6 @@ ocLimits();
               _.find(gameStore.games, { id: game.id }) != undefined || searching
             "
           >
-            <template v-slot:prepend>
-              <div
-                class="text-caption mr-2 text-left"
-                :style="{ minWidth: '15px' }"
-              >
-                {{ index + 1 + (page - 1) * MORE_PAGE_SIZE }}
-              </div>
-            </template>
           </v-list-item>
         </v-list>
       </v-card-text>

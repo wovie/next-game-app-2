@@ -5,15 +5,12 @@ import type Deck from '@/props/Deck';
 
 const gameStore = useGameStore();
 const topDeck: Deck = {
+  _id: '',
   name: 'Top Deck',
+  gameIds: [],
 };
 
-async function fetchGames(keepExpanded?: boolean) {
-  gameStore.fetchGames();
-  // if (!keepExpanded) expanded.length = 0;
-}
-
-fetchGames();
+gameStore.fetchGames();
 </script>
 
 <template>

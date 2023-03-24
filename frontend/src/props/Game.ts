@@ -9,7 +9,6 @@ export default interface Game {
     complete?: number;
   };
   howLongToBeatTimeUpdated?: number;
-  id?: number;
   name?: string;
   openCriticId?: number;
   openCriticScore?: number;
