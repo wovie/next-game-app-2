@@ -51,9 +51,9 @@ async function getData(game) {
         },
       });
 
-      const { game_id } = result.data.data[0];
+      const { game_id } = result.data.data.length > 0 && result.data.data[0];
       if (!game_id) {
-        throw new Error('Unable to determine HowLongToBeat ID');
+        throw new Error(`Unable to determine HowLongToBeat ID for: ${name}`);
       }
 
       howLongToBeatId = game_id;
@@ -85,7 +85,7 @@ async function getData(game) {
       howLongToBeatTimeUpdated: Date.now(),
     });
   } catch (e) {
-    throw new Error(e.response.data.message);
+    throw new Error(e.message || e.response.data.message);
   }
 }
 

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Ref } from 'vue';
 import _ from 'lodash';
 import type Game from '../props/Game';
 import type Platform from '../props/Platform';
@@ -8,8 +6,6 @@ import type Platform from '../props/Platform';
 const props = defineProps<{
   game: Game;
 }>();
-
-const platforms: Ref<Platform[]> = ref([]);
 
 const relevantPlatforms: Platform[] = [
   { id: 27, name: 'PC', shortName: 'PC' },
@@ -19,16 +15,18 @@ const relevantPlatforms: Platform[] = [
   // { id: 2, name: 'Xbox Series X/S', shortName:'XBXS' },
 ];
 
-platforms.value = _.filter(props.game.platforms, (p: Platform) => {
-  return _.map(relevantPlatforms, 'name').indexOf(p.name) > -1;
-});
+function platforms() {
+  return _.filter(props.game.platforms, (p: Platform) => {
+    return _.map(relevantPlatforms, 'name').indexOf(p.name) > -1;
+  });
+}
 </script>
 
 <template>
   <div class="text-end text-caption">
     {{
       _.map(
-        platforms,
+        platforms(),
         (p) => _.find(relevantPlatforms, { name: p.name })!.shortName
       ).join(', ')
     }}

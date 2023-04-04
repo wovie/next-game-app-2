@@ -11,7 +11,7 @@ function nextRun(interval, timestamp) {
   ) % 1;
   const hours = ((100 - (percent * 100)) * interval) / 100;
   const minutes = (hours % 1) * 60;
-  return `${Math.floor(hours)} hours ${Math.floor(minutes)} minutes`;
+  return `${Math.floor(hours)}h ${Math.floor(minutes)}m`;
 }
 
 router.get('/', async (req, res) => {
@@ -19,15 +19,34 @@ router.get('/', async (req, res) => {
     const v = await verify.req(req);
     if (!v.isAdmin) throw new Error('Unauthorized');
 
-    const { scheduler, timestamp, ...jobs } = status;
+    const { scheduler, timestamp, jobs } = status;
 
     if (!scheduler) throw new Error('Scheduler not started');
 
     res.status(200).send(_.map(jobs, (j) => ({
       id: j.id,
       status: scheduler.getById(j.id).getStatus(),
-      nextRun: nextRun(j.interval, timestamp),
+      nextRun: nextRun(j.module.interval, timestamp),
+      description: j.description,
     })));
+  } catch (e) {
+    res.status(500).json(e.message);
+  }
+});
+
+router.post('/', async (req, res) => {
+  try {
+    const v = await verify.req(req);
+    if (!v.isAdmin) throw new Error('Unauthorized');
+
+    const { jobs } = status;
+    const { id } = req.body;
+
+    const job = _.find(jobs, { id });
+
+    if (job) job.module.run();
+
+    res.status(200);
   } catch (e) {
     res.status(500).json(e.message);
   }

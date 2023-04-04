@@ -74,7 +74,7 @@ module.exports = {
 
     do {
       for (let i = 0; i < apiRate; i += 1) {
-        getData(bucket.pop());
+        getData(bucket.shift());
       }
       await new Promise((r) => setTimeout(r, 5000));
     } while (bucket.length > 0);

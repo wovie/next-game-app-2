@@ -23,7 +23,6 @@ const openCriticId = ref(props.game.openCriticId);
 const howLongToBeatId = ref(props.game.howLongToBeatId);
 const loadingOpenCritic = ref(false);
 const loadingHowLongToBeat = ref(false);
-const howLongToBeatUrl = `https://howlongtobeat.com/game/${props.game.howLongToBeatId}`;
 const inDecks: Ref<string[]> = ref([]);
 const gameStore = useGameStore();
 
@@ -50,8 +49,8 @@ async function changeHowLongToBeatId() {
     _id: props.game._id,
     howLongToBeatId: Number(howLongToBeatId.value),
   });
+  await gameStore.fetchGames();
   loadingHowLongToBeat.value = false;
-  gameStore.fetchGames();
 }
 
 async function updateTimestamp(game: Game) {
@@ -103,6 +102,10 @@ function buildInDecks() {
   });
 }
 
+function howLongToBeatUrl() {
+  return `https://howlongtobeat.com/game/${props.game.howLongToBeatId}`;
+}
+
 buildInDecks();
 </script>
 
@@ -150,13 +153,13 @@ buildInDecks();
                   <v-btn
                     variant="plain"
                     density="compact"
-                    :href="howLongToBeatUrl"
+                    :href="howLongToBeatUrl()"
                     size="small"
                     target="_blank"
                     class="text-caption pa-0 text-primary"
                     v-if="game.howLongToBeatId"
                     @click="updateTimestamp(game)"
-                    >{{ howLongToBeatUrl }}
+                    >{{ howLongToBeatUrl() }}
                   </v-btn>
                 </template>
               </v-text-field>

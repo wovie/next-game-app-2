@@ -13,6 +13,7 @@ import type Deck from '@/props/Deck';
 
 const props = defineProps<{
   deck: Deck;
+  pageSize?: number;
 }>();
 
 const gameStore = useGameStore();
@@ -55,13 +56,10 @@ function isExpanded(game: Game) {
 }
 
 function dataTableItems() {
-  const games =
-    props.deck.gameIds.length > 0
-      ? _.filter(
-          gameStore.games,
-          (g) => props.deck.gameIds?.indexOf(g._id) !== -1
-        )
-      : gameStore.games;
+  const games = _.filter(
+    gameStore.games,
+    (g) => props.deck.gameIds?.indexOf(g._id) !== -1
+  );
 
   if (!settingsStore.run) return games;
 
@@ -78,9 +76,9 @@ function dataTableItems() {
 </script>
 
 <template>
-  <v-card>
+  <v-card class="mb-6">
     <v-data-table
-      :items-per-page="-1"
+      :items-per-page="pageSize ? pageSize : -1"
       :headers="headers"
       :items="dataTableItems()"
       item-value="_id"
@@ -120,12 +118,8 @@ function dataTableItems() {
           >
             <td>{{ item.columns.name }}</td>
             <td><PlatformChips :game="item.raw" /></td>
-            <td>
-              <OpenCriticScore :game="item.raw" />
-            </td>
-            <td>
-              <HowLongToBeatTime :game="item.raw" />
-            </td>
+            <td><OpenCriticScore :game="item.raw" /></td>
+            <td><HowLongToBeatTime :game="item.raw" /></td>
             <td>
               <v-sheet class="text-right text-caption">
                 <v-tooltip

@@ -36,8 +36,8 @@ async function getData(game) {
     game = {
       ...game,
       openCriticScore: Math.round(data.topCriticScore),
-      openCriticUrl: data.url,
       openCriticScoreUpdated: Date.now(),
+      openCriticUrl: data.url,
       platforms: _.map(data.Platforms, (p) => ({
         name: p.name,
         shortName: p.shortName,
@@ -55,6 +55,18 @@ async function getData(game) {
 
 async function popularGames() {
   const result = await axios.get(`${url}popular`, { headers });
+  return result;
+}
+
+async function mightyGames(skip) {
+  const result = await axios.get(`${url}`, {
+    headers,
+    params: {
+      sort: 'score',
+      skip,
+      platforms: 'pc,switch,ps5',
+    },
+  });
   return result;
 }
 
@@ -112,5 +124,6 @@ module.exports = {
     getGame,
     getData,
     popularGames,
+    mightyGames,
   },
 };

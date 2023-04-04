@@ -17,7 +17,7 @@ async function updateTime(game: any) {
   if (!userStore.canUpdate(game.howLongToBeatTimeUpdated)) return;
   loading.value = true;
   await HowLongToBeatService.data(game);
-  gameStore.fetchGames();
+  await gameStore.fetchGames();
   loading.value = false;
 }
 </script>

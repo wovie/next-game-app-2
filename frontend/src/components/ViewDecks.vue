@@ -7,7 +7,6 @@ const deckStore = useDeckStore();
 
 <template>
   <SingleDeck
-    class="mb-6"
     v-for="deck in deckStore.selectedDecks()"
     :key="deck._id"
     :deck="deck"

@@ -2,26 +2,17 @@ const { ToadScheduler, SimpleIntervalJob, Task } = require('toad-scheduler');
 const oc = require('./oc');
 const hltb = require('./hltb');
 const ocPopular = require('./ocPopular');
-
-const OC_JOB_ID = 'oc_job_id';
-const HLTB_JOB_ID = 'hltb_job_id';
-const OC_POPULAR_JOB_ID = 'oc_popular_job_id';
+const ocMighty = require('./ocMighty');
 
 const status = {
   scheduler: null,
   timestamp: null,
-  openCriticJob: {
-    id: OC_JOB_ID,
-    interval: oc.interval,
-  },
-  howLongToBeatJob: {
-    id: HLTB_JOB_ID,
-    interval: hltb.interval,
-  },
-  openCriticPopularJob: {
-    id: OC_POPULAR_JOB_ID,
-    interval: ocPopular.interval,
-  },
+  jobs: [
+    { id: 'oc_fill_update', module: oc, description: 'Fill and update OpenCritic data' },
+    { id: 'hltb_fill_update', module: hltb, description: 'Fill and update HowLongToBeat data' },
+    { id: 'oc_popular', module: ocPopular, description: 'Add popular games' },
+    { id: 'oc_mighty', module: ocMighty, description: 'Add Mighty (84+) games' },
+  ],
 };
 
 function logDividers(title) {
@@ -41,43 +32,22 @@ module.exports = {
     status.scheduler = new ToadScheduler();
     status.timestamp = Date.now();
 
-    status.scheduler.addSimpleIntervalJob(
-      new SimpleIntervalJob(
-        { hours: oc.interval },
-        new Task('OpenCritic Task Runner', () => {
-          logDividers();
-          logDividers('OPENCRITIC');
-          oc.run();
-        }),
-        { id: OC_JOB_ID },
-      ),
-    );
-    console.log(`Added ${OC_JOB_ID}, running every ${oc.interval} hours`);
+    status.jobs.forEach((j) => {
+      const { id, module } = j;
 
-    status.scheduler.addSimpleIntervalJob(
-      new SimpleIntervalJob(
-        { hours: hltb.interval },
-        new Task('HowLongToBeat Task Runner', () => {
-          logDividers();
-          logDividers('HOWLONGTOBEAT');
-          hltb.run();
-        }),
-        { id: HLTB_JOB_ID },
-      ),
-    );
-    console.log(`Added ${HLTB_JOB_ID}, running every ${hltb.interval} hours`);
+      status.scheduler.addSimpleIntervalJob(
+        new SimpleIntervalJob(
+          { hours: module.interval },
+          new Task(`${id}`, () => {
+            logDividers();
+            logDividers(id);
+            module.run();
+          }),
+          { id },
+        ),
+      );
 
-    status.scheduler.addSimpleIntervalJob(
-      new SimpleIntervalJob(
-        { hours: ocPopular.interval },
-        new Task('OpenCritic Popular Task Runner', () => {
-          logDividers();
-          logDividers('OPENCRITIC POPULAR');
-          ocPopular.run();
-        }),
-        { id: OC_POPULAR_JOB_ID },
-      ),
-    );
-    console.log(`Added ${OC_POPULAR_JOB_ID}, running every ${ocPopular.interval} hours`);
+      console.log(`Added ${id}, running every ${module.interval} hours`);
+    });
   },
 };

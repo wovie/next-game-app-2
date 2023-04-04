@@ -79,6 +79,10 @@ function convertSeconds(seconds: number) {
   return `${Math.floor(hours)} hours ${Math.floor(minutes)} minutes`;
 }
 
+function runJob(id: string) {
+  JobService.run(id);
+}
+
 jobStatus();
 ocLimits();
 </script>
@@ -123,9 +127,25 @@ ocLimits();
     </v-window-item>
     <v-window-item value="jobs">
       <v-card-text>
-        <div v-for="job in jobs" :key="job.id">
-          {{ `${job.id}, ${job.nextRun}` }}
-        </div>
+        <v-list lines="two">
+          <v-list-item
+            v-for="job in jobs"
+            :key="job.id"
+            :subtitle="job.description"
+          >
+            <template v-slot:title>
+              {{ `${job.id} (${job.nextRun})` }}
+            </template>
+            <template v-slot:append>
+              <v-btn
+                icon="mdi-run"
+                variant="text"
+                density="comfortable"
+                @click="runJob(job.id)"
+              ></v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-text>

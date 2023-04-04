@@ -27,7 +27,7 @@ async function addGame(game) {
 router.get('/', async (req, res) => {
   try {
     const games = mdb.getCollection('games');
-    const result = await games.find({}).sort({ openCriticScore: -1 }).toArray();
+    const result = await games.find({}).sort({ released: -1 }).toArray();
     res.status(200).send(result);
   } catch (e) {
     res.status(500).json(e.message);

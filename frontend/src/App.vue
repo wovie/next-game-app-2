@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import _ from 'lodash';
+import { ref, reactive } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
 import { useSettingsStore } from '@/stores/settings';
 import { useDeckStore } from '@/stores/deck';
-import TopDeck from './components/TopDeck.vue';
+import SingleDeck from './components/SingleDeck.vue';
 import ViewDecks from './components/ViewDecks.vue';
 import AdminNavDrawer from './components/AdminNavDrawer.vue';
 import DecksNavDrawer from './components/DecksNavDrawer.vue';
 import SettingsDrawer from './components/SettingsDrawer.vue';
+import { useGameStore } from '@/stores/game';
+import type Deck from '@/props/Deck';
 
 const railDrawer = ref(true);
 const navDrawer = ref(false);
@@ -19,9 +22,19 @@ const settingsStore = useSettingsStore();
 let interceptor: number = -1;
 const GOOGLE_TIMEOUT = 100;
 const LOGO_SIZE = 28;
+const topDeck: Deck = reactive({
+  _id: '',
+  name: 'Top Deck',
+  gameIds: [],
+});
+const unreleasedDeck: Deck = reactive({
+  _id: '',
+  name: 'Hype Deck',
+  gameIds: [],
+});
+const gameStore = useGameStore();
 
 const footerLinks = [
-  { name: 'RAWG', link: 'https://rawg.io/', logo: 'rawgLogo.jpg' },
   {
     name: 'OpenCritic',
     link: 'https://opencritic.com/',
@@ -82,7 +95,27 @@ async function login(response: any) {
   deckStore.getDecks();
 }
 
+async function buildHomeDecks() {
+  await gameStore.fetchGames();
+
+  topDeck.gameIds.length = 0;
+  _.map(
+    _.filter(gameStore.games, (g) => g.released! <= Date.now()),
+    '_id'
+  ).forEach((id) => {
+    topDeck.gameIds.push(id);
+  });
+
+  _.map(
+    _.filter(gameStore.games, (g) => g.released! > Date.now()),
+    '_id'
+  ).forEach((id) => {
+    unreleasedDeck.gameIds.push(id);
+  });
+}
+
 function goHome() {
+  buildHomeDecks();
   navDrawer.value = false;
   navSelect.value = 'HOME';
   deckStore.show = false;
@@ -124,7 +157,8 @@ goHome();
 
 function todos() {
   const todos = [
-    'Import Mighties',
+    'Add excluded games',
+    'Close SELECT after sending game to deck',
     'Finish filters',
     'Prettify job status',
     'Branding: OnDeck',
@@ -133,7 +167,6 @@ function todos() {
     'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'New solution for jobs (Render free plan sleeps)',
     'More loaders, animations',
-    'RAWG: delete id prop from db, delete files, remove footer link',
   ];
 
   if (todos.length) {
@@ -224,7 +257,9 @@ todos();
 
     <v-main>
       <v-container fluid class="v-col-lg-6">
-        <TopDeck v-if="!deckStore.show" />
+        <SingleDeck v-if="!deckStore.show" :deck="topDeck" :pageSize="10" />
+        <SingleDeck v-if="!deckStore.show" :deck="unreleasedDeck" />
+
         <ViewDecks v-if="deckStore.show" />
       </v-container>
     </v-main>
