@@ -157,10 +157,9 @@ goHome();
 
 function todos() {
   const todos = [
-    'Add excluded games',
-    'Close SELECT after sending game to deck',
+    'Fix certain HLTB data (Atari 50)',
     'Finish filters',
-    'Prettify job status',
+    'Close SELECT after sending game to deck',
     'Branding: OnDeck',
     'Add ITAD data',
     'Add Steam Deck data',

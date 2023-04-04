@@ -1,7 +1,9 @@
+const _ = require('lodash');
 const express = require('express');
 const { ObjectId } = require('mongodb');
 const mdb = require('../../db/mdb');
 const verify = require('../verify');
+const blacklist = require('./blacklist');
 
 const router = express.Router();
 
@@ -26,8 +28,11 @@ async function addGame(game) {
 
 router.get('/', async (req, res) => {
   try {
+    const list = await blacklist.methods.getBlacklist();
+    const nin = _.map(list, (item) => new ObjectId(item.id));
+    const query = { _id: { $nin: nin } };
     const games = mdb.getCollection('games');
-    const result = await games.find({}).sort({ released: -1 }).toArray();
+    const result = await games.find(query).sort({ released: -1 }).toArray();
     res.status(200).send(result);
   } catch (e) {
     res.status(500).json(e.message);

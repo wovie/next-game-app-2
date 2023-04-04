@@ -5,6 +5,7 @@ const jobs = require('./jobs/jobs');
 const oc = require('./routes/api/oc');
 const games = require('./routes/api/games');
 const hltb = require('./routes/api/hltb');
+const blacklist = require('./routes/api/blacklist');
 
 const app = express();
 const port = 5000;
@@ -23,6 +24,7 @@ app.use('/api/oc', oc.router);
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/jobs', require('./routes/api/jobs'));
 app.use('/api/decks', require('./routes/api/decks'));
+app.use('/api/blacklist', blacklist.router);
 
 console.log('TODO: explore express global error handling');
 // Global error handling

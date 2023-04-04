@@ -12,6 +12,7 @@ import WhenUpdated from '../components/WhenUpdated.vue';
 import { useGameStore } from '@/stores/game';
 import { useDeckStore } from '@/stores/deck';
 import DeckService from '@/services/DeckService';
+import BlacklistService from '@/services/BlacklistService';
 
 const props = defineProps<{
   game: Game;
@@ -106,6 +107,11 @@ function howLongToBeatUrl() {
   return `https://howlongtobeat.com/game/${props.game.howLongToBeatId}`;
 }
 
+async function blacklistGame(game: Game) {
+  await BlacklistService.blacklistGame(game);
+  gameStore.fetchGames();
+}
+
 buildInDecks();
 </script>
 
@@ -193,13 +199,20 @@ buildInDecks();
           </v-col>
           <v-col class="text-right py-1">
             <v-btn
+              @click="blacklistGame(game)"
+              color="warning"
+              size="x-small"
+              icon="mdi-eye-off"
+              v-if="userStore.isAdmin"
+              class="mr-2"
+            />
+            <v-btn
               @click="deleteGame(game._id)"
               color="error"
               size="x-small"
               icon="mdi-delete"
               v-if="userStore.isAdmin"
-            >
-            </v-btn>
+            />
           </v-col>
         </v-row>
       </v-container>

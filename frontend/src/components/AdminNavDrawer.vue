@@ -7,6 +7,8 @@ import { DEBUG_LOADING } from '../util/debug';
 import GameService from '../services/GameService';
 import { useGameStore } from '@/stores/game';
 import OpenCriticService from '@/services/OpenCriticService';
+import BlacklistService from '@/services/BlacklistService';
+import type BlacklistItem from '@/props/BlacklistItem';
 
 const tabs = ref(null);
 const jobs: Ref<any[]> = ref([]);
@@ -16,6 +18,7 @@ const games: Ref<SearchResult[]> = ref([]);
 const gameStore = useGameStore();
 const emit = defineEmits(['goHome']);
 const limits: any = ref({});
+const blacklist: Ref<BlacklistItem[]> = ref([]);
 
 interface SearchResult {
   id: number;
@@ -83,8 +86,24 @@ function runJob(id: string) {
   JobService.run(id);
 }
 
+async function getBlacklist() {
+  const result = await BlacklistService.getBlacklist();
+  blacklist.value.length = 0;
+  result.forEach((r: BlacklistItem) => {
+    blacklist.value.push(r);
+  });
+
+  console.log(blacklist);
+}
+
+async function unblacklistGame(id: string) {
+  await BlacklistService.unblacklistGame(id);
+  await getBlacklist();
+}
+
 jobStatus();
 ocLimits();
+getBlacklist();
 </script>
 
 <template>
@@ -121,6 +140,24 @@ ocLimits();
               _.find(gameStore.games, { id: game.id }) != undefined || searching
             "
           >
+          </v-list-item>
+        </v-list>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-list>
+          <v-list-item v-for="item in blacklist" :key="item._id">
+            <template v-slot:title>
+              {{ item.name }}
+            </template>
+            <template v-slot:append>
+              <v-btn
+                icon="mdi-eye"
+                variant="text"
+                density="comfortable"
+                @click="unblacklistGame(item._id)"
+              ></v-btn>
+            </template>
           </v-list-item>
         </v-list>
       </v-card-text>
