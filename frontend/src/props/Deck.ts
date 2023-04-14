@@ -6,4 +6,5 @@ export default interface Deck {
   selected?: boolean;
   userId?: string;
   sort?: number;
+  filters?: any;
 }

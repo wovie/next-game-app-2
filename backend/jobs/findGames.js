@@ -1,36 +1,50 @@
+const _ = require('lodash');
+const { ObjectId } = require('mongodb');
 const mdb = require('../db/mdb');
+const games = require('../routes/api/games');
+const blacklist = require('../routes/api/blacklist');
 
 const epochDay = (1000 * 60 * 60 * 24);
 
 module.exports = {
-  findMissingData: (prop) => {
+  findMissingData: async (prop) => {
+    const bl = await blacklist.methods.getBlacklist();
+    const nin = _.map(bl, (item) => new ObjectId(item.id));
+
     const query = { released: { $lt: Date.now() } };
     query[prop] = { $exists: false };
+    query._id = { $nin: nin };
 
-    const games = mdb.getCollection('games');
-    return games.find(query).sort({ released: -1 });
+    const collection = mdb.getCollection('games');
+    return collection.find(query).sort({ released: -1 });
   },
 
-  findReleasedDateRange: (params) => {
+  findReleasedDateRange: async (params) => {
     const { beginDays, endDays, tresholdDays, updatedProp } = params;
     const begin = beginDays * epochDay;
     const end = endDays * epochDay;
     const threshold = tresholdDays * epochDay;
     const now = Date.now();
 
+    const bl = await blacklist.methods.getBlacklist();
+    const nin = _.map(bl, (item) => new ObjectId(item.id));
+
     const query = {
       released: { $lte: now - begin, $gte: now - end },
     };
     query[updatedProp] = { $exists: true, $lte: now - threshold };
+    query._id = { $nin: nin };
 
-    const games = mdb.getCollection('games');
-    return games.find(query).sort({ released: -1 });
+    const collection = mdb.getCollection('games');
+    return collection.find(query).sort({ released: -1 });
   },
 
   findOpenCriticId: (ids) => {
     const query = { openCriticId: { $in: ids } };
 
-    const games = mdb.getCollection('games');
-    return games.find(query).sort({ released: -1 });
+    const collection = mdb.getCollection('games');
+    return collection.find(query).sort({ released: -1 });
   },
+
+  findAll: () => games.methods.getGames(),
 };

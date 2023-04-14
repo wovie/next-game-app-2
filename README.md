@@ -1,4 +1,4 @@
-# next-game-app-2
+# OnDeck
 
 This template should help get you started developing with Vue 3 in Vite.
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { reactive, toRaw } from 'vue';
-import _ from 'lodash';
 import type Game from '../props/Game';
 import OpenCriticScore from './OpenCriticScore.vue';
 import HowLongToBeatTime from './HowLongToBeatTime.vue';
@@ -8,7 +7,7 @@ import WhenReleasing from './WhenReleasing.vue';
 import PlatformChips from './PlatformChips.vue';
 import ExpandedRow from './ExpandedRow.vue';
 import { useSettingsStore } from '@/stores/settings';
-import { useGameStore } from '@/stores/game';
+import { useDeckStore } from '@/stores/deck';
 import type Deck from '@/props/Deck';
 
 const props = defineProps<{
@@ -16,8 +15,8 @@ const props = defineProps<{
   pageSize?: number;
 }>();
 
-const gameStore = useGameStore();
 const settingsStore = useSettingsStore();
+const deckStore = useDeckStore();
 const expanded: string[] = reactive([]);
 
 const headers = [
@@ -54,25 +53,6 @@ function expand(game: Game) {
 function isExpanded(game: Game) {
   return expanded.indexOf(game._id) > -1;
 }
-
-function dataTableItems() {
-  const games = _.filter(
-    gameStore.games,
-    (g) => props.deck.gameIds?.indexOf(g._id) !== -1
-  );
-
-  if (!settingsStore.run) return games;
-
-  // TODO clean this up
-  if (!settingsStore.searchTitle) return games;
-
-  return _.filter(games, (g: Game) => {
-    return (
-      g.name!.toLowerCase().indexOf(settingsStore.searchTitle.toLowerCase()) !==
-      -1
-    );
-  });
-}
 </script>
 
 <template>
@@ -80,19 +60,21 @@ function dataTableItems() {
     <v-data-table
       :items-per-page="pageSize ? pageSize : -1"
       :headers="headers"
-      :items="dataTableItems()"
+      :items="deckStore.getFilteredGames(props.deck)"
       item-value="_id"
       item-title="name"
       show-expand
       class="text-body-2 single-deck"
       :expanded="expanded"
+      must-sort
+      :sort-by="props.deck.filters?.sortBy"
     >
       <template v-slot:top>
         <v-toolbar
           flat
           density="compact"
           color="blue-grey"
-          v-if="props.deck.name"
+          v-if="props.deck && props.deck.name"
         >
           <v-toolbar-title>{{ props.deck.name }}</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -100,7 +82,7 @@ function dataTableItems() {
             icon="mdi-playlist-edit"
             @click="settingsStore.showSettings(props.deck)"
             density="comfortable"
-            :color="settingsStore.run ? 'primary' : ''"
+            :color="settingsStore.hasFilters(props.deck) ? 'primary' : ''"
             variant="tonal"
           />
         </v-toolbar>

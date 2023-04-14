@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash';
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user';
 import { useSettingsStore } from '@/stores/settings';
@@ -11,7 +11,6 @@ import AdminNavDrawer from './components/AdminNavDrawer.vue';
 import DecksNavDrawer from './components/DecksNavDrawer.vue';
 import SettingsDrawer from './components/SettingsDrawer.vue';
 import { useGameStore } from '@/stores/game';
-import type Deck from '@/props/Deck';
 
 const railDrawer = ref(true);
 const navDrawer = ref(false);
@@ -22,16 +21,6 @@ const settingsStore = useSettingsStore();
 let interceptor: number = -1;
 const GOOGLE_TIMEOUT = 100;
 const LOGO_SIZE = 28;
-const topDeck: Deck = reactive({
-  _id: '',
-  name: 'Top Deck',
-  gameIds: [],
-});
-const unreleasedDeck: Deck = reactive({
-  _id: '',
-  name: 'Hype Deck',
-  gameIds: [],
-});
 const gameStore = useGameStore();
 
 const footerLinks = [
@@ -98,19 +87,20 @@ async function login(response: any) {
 async function buildHomeDecks() {
   await gameStore.fetchGames();
 
-  topDeck.gameIds.length = 0;
+  deckStore.topDeck.gameIds.length = 0;
   _.map(
     _.filter(gameStore.games, (g) => g.released! <= Date.now()),
     '_id'
   ).forEach((id) => {
-    topDeck.gameIds.push(id);
+    deckStore.topDeck.gameIds.push(id);
   });
 
+  deckStore.hypeDeck.gameIds.length = 0;
   _.map(
     _.filter(gameStore.games, (g) => g.released! > Date.now()),
     '_id'
   ).forEach((id) => {
-    unreleasedDeck.gameIds.push(id);
+    deckStore.hypeDeck.gameIds.push(id);
   });
 }
 
@@ -157,12 +147,22 @@ goHome();
 
 function todos() {
   const todos = [
-    'Fix certain HLTB data (Atari 50)',
-    'Finish filters',
-    'Close SELECT after sending game to deck',
-    'Branding: OnDeck',
+    'Fixed column widths, fix responsiveness',
+    'Filters: Platforms',
+    'Filters: Released',
+    'Filters: OC',
+    'Save filters to db',
+
     'Add ITAD data',
     'Add Steam Deck data',
+
+    'Add OC num of reviews',
+
+    'Prettify Blacklist',
+    'Blacklist: Min number of reviews: 8',
+
+    'Close SELECT after sending game to deck',
+    'Branding: OnDeck',
     'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'New solution for jobs (Render free plan sleeps)',
     'More loaders, animations',
@@ -183,7 +183,7 @@ todos();
       temporary
       location="top"
       @update:model-value="filtersDrawerUpdated()"
-      width="384"
+      width="448"
     >
       <SettingsDrawer />
     </v-navigation-drawer>
@@ -256,8 +256,12 @@ todos();
 
     <v-main>
       <v-container fluid class="v-col-lg-6">
-        <SingleDeck v-if="!deckStore.show" :deck="topDeck" :pageSize="10" />
-        <SingleDeck v-if="!deckStore.show" :deck="unreleasedDeck" />
+        <SingleDeck
+          v-if="!deckStore.show"
+          :deck="deckStore.topDeck"
+          :pageSize="10"
+        />
+        <SingleDeck v-if="!deckStore.show" :deck="deckStore.hypeDeck" />
 
         <ViewDecks v-if="deckStore.show" />
       </v-container>

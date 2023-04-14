@@ -31,7 +31,7 @@ async function deleteDeck() {
               <v-form @submit.prevent="settingsStore.applyFilters()">
                 <v-text-field
                   variant="solo"
-                  v-model="settingsStore.searchTitle"
+                  v-model="settingsStore.filters.name"
                   density="compact"
                   clearable
                   hide-details
@@ -39,10 +39,32 @@ async function deleteDeck() {
                 />
               </v-form>
             </v-col>
+            <v-col
+              v-for="(filter, prop, index) in settingsStore.filters
+                .howLongToBeatTime"
+              :key="index"
+              class="px-6"
+            >
+              <v-row>
+                <v-checkbox :label="prop" v-model="filter.set" />
+              </v-row>
+              <v-row :style="{ gap: '1rem' }">
+                <v-text-field
+                  label="Min"
+                  variant="underlined"
+                  v-model="filter.min"
+                />
+                <v-text-field
+                  label="Max"
+                  variant="underlined"
+                  v-model="filter.max"
+                />
+              </v-row>
+            </v-col>
           </v-row>
           <v-row>
             <v-col class="text-right">
-              <v-btn @click="settingsStore.clearFilters()">Clear</v-btn>
+              <v-btn @click="settingsStore.clearFilters(true)">Clear</v-btn>
             </v-col>
           </v-row>
         </v-expansion-panel-text>

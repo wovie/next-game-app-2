@@ -5,7 +5,7 @@ const oc = require('../routes/api/oc');
 const idProp = 'openCriticId';
 const updatedProp = 'openCriticScoreUpdated';
 const urlProp = 'openCriticUrl';
-const interval = 4; // hours
+const interval = 6; // hours
 const apiRate = 1; // requests per 5 seconds
 let bucket = [];
 
@@ -16,15 +16,13 @@ async function checkLimits() {
     const limit = headers['x-ratelimit-requests-limit'];
     const remaining = headers['x-ratelimit-requests-remaining'];
     const reset = headers['x-ratelimit-requests-reset'];
-    const intervalSeconds = interval * 60 * 60;
     const buffer = 20;
 
     console.log('X-RateLimit-Requests-Limit:', limit);
     console.log('X-RateLimit-Requests-Remaining:', remaining);
     console.log('X-RateLimit-Requests-Reset:', reset);
 
-    let check = false;
-    check = (reset < intervalSeconds) && (remaining > buffer);
+    const check = (remaining > buffer);
     console.log('OpenCritic API limits check:', check);
     return check;
   } catch (e) {

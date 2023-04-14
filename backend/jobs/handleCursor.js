@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 module.exports = async function handleCursor(cursor, bucket, query) {
   if (query) {
     const { title, beginDays, endDays, tresholdDays, idProp, urlProp } = query;
@@ -36,7 +38,7 @@ module.exports = async function handleCursor(cursor, bucket, query) {
       console.log(cursorLogs.join(', '));
     }
 
-    bucket.push(g);
+    if (_.findIndex(bucket, { _id: g._id }) === -1) bucket.push(g);
   });
 
   return bucket;

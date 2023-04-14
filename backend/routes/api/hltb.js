@@ -63,27 +63,49 @@ async function getData(game) {
     const $ = cheerio.load(result.data);
     let node = $('main');
     // console.log(node.attr("class"));
-    node = node.find("div[class^='GameStats_game_times']");
+    // node = node.find("div[class^='GameStats_game_times']");
+    node = node.find("table[class^='GameTimeTable_game_main_table']");
     // console.log(node.attr("class"));
-    node = node.children('ul').contents();
+    node = node.children('tbody').contents();
     // const data = $.extract({
     //   li: ["main div[class^='GameStats_game_times'] ul .GameStats_short__mnFjd"],
     // });
 
+    const howLongToBeatTime = {};
     const pattern = /[^\d]+/g;
-    const main = parseInt(node.eq(0).contents().eq(1).text()
-      .replace(pattern, ''));
-    const mainPlus = parseInt(node.eq(1).contents().eq(1).text()
-      .replace(pattern, ''));
-    const complete = parseInt(node.eq(2).contents().eq(1).text()
-      .replace(pattern, ''));
 
-    return games.methods.updateGame({
+    const main = parseInt(
+      node.has("td:contains('Main Story')")
+        .contents().eq(2).text()
+        .split(' ')[0].replace(pattern, ''),
+    );
+    if (main) howLongToBeatTime.main = main;
+
+    const mainPlus = parseInt(
+      node.has("td:contains('Main + Extras')")
+        .contents().eq(2).text()
+        .split(' ')[0].replace(pattern, ''),
+    );
+    if (mainPlus) howLongToBeatTime.mainPlus = mainPlus;
+
+    const complete = parseInt(
+      node.has("td:contains('Completionist')")
+        .contents().eq(2).text()
+        .split(' ')[0].replace(pattern, ''),
+    );
+    if (complete) howLongToBeatTime.complete = complete;
+
+    const update = {
       ...game,
       howLongToBeatId,
-      howLongToBeatTime: { main, mainPlus, complete },
+      howLongToBeatTime,
       howLongToBeatTimeUpdated: Date.now(),
-    });
+    };
+
+    const updated = await games.methods.updateGame(update);
+
+    if (!updated.acknowledged) throw updated;
+    else return update;
   } catch (e) {
     throw new Error(e.message || e.response.data.message);
   }

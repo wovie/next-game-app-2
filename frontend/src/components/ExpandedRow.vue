@@ -59,7 +59,6 @@ async function updateTimestamp(game: Game) {
 
   const { _id } = game;
   await GameService.updateGame({ _id, timestamp: Date.now() });
-  console.log('keepExpanded was here');
   gameStore.fetchGames();
 }
 

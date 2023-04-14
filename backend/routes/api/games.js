@@ -26,13 +26,17 @@ async function addGame(game) {
   return games.replaceOne(query, rest, options);
 }
 
+async function getGames() {
+  const bl = await blacklist.methods.getBlacklist();
+  const nin = _.map(bl, (item) => new ObjectId(item.id));
+  const query = { _id: { $nin: nin } };
+  const games = mdb.getCollection('games');
+  return games.find(query).sort({ released: -1 }).toArray();
+}
+
 router.get('/', async (req, res) => {
   try {
-    const list = await blacklist.methods.getBlacklist();
-    const nin = _.map(list, (item) => new ObjectId(item.id));
-    const query = { _id: { $nin: nin } };
-    const games = mdb.getCollection('games');
-    const result = await games.find(query).sort({ released: -1 }).toArray();
+    const result = await getGames();
     res.status(200).send(result);
   } catch (e) {
     res.status(500).json(e.message);
@@ -82,5 +86,6 @@ module.exports = {
   methods: {
     updateGame,
     addGame,
+    getGames,
   },
 };

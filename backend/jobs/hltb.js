@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const findGames = require('./findGames');
 const handleCursor = require('./handleCursor');
 const hltb = require('../routes/api/hltb');
@@ -12,7 +13,8 @@ async function getData(game) {
   if (!game) return;
   try {
     const result = await hltb.methods.getData(game);
-    console.log('hltb getData result:', result);
+    const { name, howLongToBeatTime } = result;
+    console.log(name, howLongToBeatTime);
   } catch (e) {
     console.log(e);
   }
@@ -22,8 +24,9 @@ module.exports = {
   interval,
   run: async () => {
     bucket = [];
+    let cursor;
 
-    let cursor = await findGames.findMissingData(idProp);
+    cursor = await findGames.findMissingData(idProp);
     await handleCursor(cursor, bucket, { title: 'findMissingData', idProp });
 
     const dateRangeQueries = [
@@ -36,6 +39,9 @@ module.exports = {
       cursor = await findGames.findReleasedDateRange(q);
       bucket = await handleCursor(cursor, bucket, { title: 'findReleasedDateRange', ...q });
     }
+
+    // cursor = await findGames.findAll();
+    // await handleCursor(cursor, bucket, { title: 'findAll' });
 
     console.log('HowLongToBeat bucket count:', bucket.length);
 
