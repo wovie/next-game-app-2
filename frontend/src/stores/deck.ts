@@ -93,22 +93,26 @@ export const useDeckStore = defineStore('deck', () => {
         if (filter.min.length > 0) {
           games = _.filter(games, (g: Game) => {
             return (
-              g.howLongToBeatTime && g.howLongToBeatTime[prop] >= filter.min
+              g.howLongToBeatTime &&
+              g.howLongToBeatTime[prop as keyof object] >= filter.min
             );
-          });
+          }) as Game[];
         }
 
         if (filter.max.length > 0) {
           games = _.filter(games, (g: Game) => {
             return (
-              g.howLongToBeatTime && g.howLongToBeatTime[prop] <= filter.max
+              g.howLongToBeatTime &&
+              g.howLongToBeatTime[prop as keyof object] <= filter.max
             );
-          });
+          }) as Game[];
         }
 
         if (filter.min.length === 0 && filter.max.length === 0) {
           games = _.filter(games, (g: Game) => {
-            return !g.howLongToBeatTime || !g.howLongToBeatTime[prop];
+            return (
+              !g.howLongToBeatTime || !g.howLongToBeatTime[prop as keyof object]
+            );
           });
         }
       }

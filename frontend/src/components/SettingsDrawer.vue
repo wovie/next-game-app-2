@@ -46,7 +46,7 @@ async function deleteDeck() {
               class="px-6"
             >
               <v-row>
-                <v-checkbox :label="prop" v-model="filter.set" />
+                <v-checkbox :label="prop as any" v-model="filter.set" />
               </v-row>
               <v-row :style="{ gap: '1rem' }">
                 <v-text-field

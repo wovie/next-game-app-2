@@ -147,6 +147,8 @@ goHome();
 
 function todos() {
   const todos = [
+    'Fix ignoreDeprecations',
+
     'Fixed column widths, fix responsiveness',
     'Filters: Platforms',
     'Filters: Released',

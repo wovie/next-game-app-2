@@ -28,10 +28,10 @@ export const useSettingsStore = defineStore('settings', () => {
     },
     sortBy: [],
   };
-  const filters = ref({});
+  const filters: any = ref({});
   const showDrawer = ref(false);
   const run = ref(false);
-  const deck: Ref<Deck> = ref({});
+  const deck: Ref<Deck | any> = ref({});
   const deckStore = useDeckStore();
 
   function showSettings(d: Deck | void) {
@@ -59,7 +59,7 @@ export const useSettingsStore = defineStore('settings', () => {
     if (!deck.value.userId) return;
 
     // Omit filters for now
-    DeckService.updateDeck(_.omit(deck.value, 'filters'));
+    DeckService.updateDeck(_.omit(deck.value, 'filters') as Deck);
   }
 
   function clearFilters(apply: boolean) {
