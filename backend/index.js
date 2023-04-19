@@ -48,7 +48,15 @@ mdb.connectToServer((err) => {
     cert: fs.readFileSync('client-cert.pem'),
   };
 
-  https.createServer(options, app).listen(port, () => {
+  // https.createServer(options, app).listen(port, () => {
+  //   console.log(`HTTPS server started on port: ${port}`);
+
+  //   if (process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development') {
+  //     jobs.run();
+  //   }
+  // });
+
+  app.listen(port, () => {
     console.log(`HTTPS server started on port: ${port}`);
 
     if (process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development') {
