@@ -13,6 +13,7 @@ import { useGameStore } from '@/stores/game';
 import { useDeckStore } from '@/stores/deck';
 import DeckService from '@/services/DeckService';
 import BlacklistService from '@/services/BlacklistService';
+import IsThereAnyDealService from '@/services/IsThereAnyDealService';
 
 const props = defineProps<{
   game: Game;
@@ -22,8 +23,10 @@ const userStore = useUserStore();
 const deckStore = useDeckStore();
 const openCriticId = ref(props.game.openCriticId);
 const howLongToBeatId = ref(props.game.howLongToBeatId);
+const isThereAnyDealId = ref(props.game.isThereAnyDealId);
 const loadingOpenCritic = ref(false);
 const loadingHowLongToBeat = ref(false);
+const loadingIsThereAnyDeal = ref(false);
 const inDecks: Ref<string[]> = ref([]);
 const gameStore = useGameStore();
 
@@ -111,6 +114,17 @@ async function blacklistGame(game: Game) {
   gameStore.fetchGames();
 }
 
+async function changeIsThereAnyDealId() {
+  if (props.game.isThereAnyDealId === isThereAnyDealId.value) return;
+  loadingIsThereAnyDeal.value = true;
+  await IsThereAnyDealService.data({
+    _id: props.game._id,
+    isThereAnyDealId: String(isThereAnyDealId.value),
+  });
+  loadingIsThereAnyDeal.value = false;
+  gameStore.fetchGames();
+}
+
 buildInDecks();
 </script>
 
@@ -165,6 +179,30 @@ buildInDecks();
                     v-if="game.howLongToBeatId"
                     @click="updateTimestamp(game)"
                     >{{ howLongToBeatUrl() }}
+                  </v-btn>
+                </template>
+              </v-text-field>
+            </v-form>
+            <v-form @submit.prevent="changeIsThereAnyDealId()">
+              <v-text-field
+                density="compact"
+                label="IsThereAnyDeal"
+                v-model="isThereAnyDealId"
+                variant="outlined"
+                v-if="game.released && Date.now() - game.released > 0"
+                :readonly="!userStore.isAdmin"
+              >
+                <template v-slot:details>
+                  <v-btn
+                    variant="plain"
+                    density="compact"
+                    :href="game.isThereAnyDealUrl"
+                    size="small"
+                    target="_blank"
+                    class="text-caption pa-0 text-primary"
+                    v-if="game.isThereAnyDealId"
+                    @click="updateTimestamp(game)"
+                    >{{ game.isThereAnyDealUrl }}
                   </v-btn>
                 </template>
               </v-text-field>

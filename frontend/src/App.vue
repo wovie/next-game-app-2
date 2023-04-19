@@ -34,6 +34,11 @@ const footerLinks = [
     link: 'https://howlongtobeat.com/',
     logo: 'howLongToBeatLogo.png',
   },
+  {
+    name: 'IsThereAnyDeal',
+    link: 'https://isthereanydeal.com/',
+    logo: 'isThereAnyDealLogo.jpg',
+  },
 ];
 
 window.onload = function () {
@@ -147,7 +152,10 @@ goHome();
 
 function todos() {
   const todos = [
-    'Fix ignoreDeprecations',
+    'Add ITAD jobs',
+    'Fix: Google is not defined',
+    'Fix: ignoreDeprecations',
+    'Support HTTPS',
 
     'Fixed column widths, fix responsiveness',
     'Filters: Platforms',
@@ -155,7 +163,6 @@ function todos() {
     'Filters: OC',
     'Save filters to db',
 
-    'Add ITAD data',
     'Add Steam Deck data',
 
     'Add OC num of reviews',

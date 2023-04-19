@@ -9,6 +9,13 @@ export default interface Game {
     complete?: number;
   };
   howLongToBeatTimeUpdated?: number;
+  isThereAnyDealId?: string;
+  isThereAnyDealPrice?: {
+    cut?: number;
+    price?: number;
+  };
+  isThereAnyDealPriceUpdated?: number;
+  isThereAnyDealUrl?: string;
   name?: string;
   openCriticId?: number;
   openCriticScore?: number;

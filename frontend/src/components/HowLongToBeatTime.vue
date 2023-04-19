@@ -29,7 +29,7 @@ async function updateTime(game: any) {
         @click="updateTime(props.game)"
         v-if="!loading && Date.now() - props.game.released >= 0"
         border
-        class="d-flex justify-space-evenly fill-height align-center hltb"
+        class="hltb d-flex justify-space-evenly fill-height align-center"
         :class="{
           link: userStore.canUpdate(props.game.howLongToBeatTimeUpdated),
         }"

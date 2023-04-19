@@ -9,6 +9,7 @@ import ExpandedRow from './ExpandedRow.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useDeckStore } from '@/stores/deck';
 import type Deck from '@/props/Deck';
+import IsThereAnyDealPrice from './IsThereAnyDealPrice.vue';
 
 const props = defineProps<{
   deck: Deck;
@@ -28,6 +29,7 @@ const headers = [
     align: 'end',
     key: 'howLongToBeatTime',
   },
+  { title: 'IsThereAnyDeal', align: 'end', key: 'isThereAnyDealPrice' },
   { title: 'Released', align: 'end', key: 'released' },
   { key: 'data-table-expand' },
 ];
@@ -102,6 +104,7 @@ function isExpanded(game: Game) {
             <td><PlatformChips :game="item.raw" /></td>
             <td><OpenCriticScore :game="item.raw" /></td>
             <td><HowLongToBeatTime :game="item.raw" /></td>
+            <td><IsThereAnyDealPrice :game="item.raw" /></td>
             <td>
               <v-sheet class="text-right text-caption">
                 <v-tooltip
