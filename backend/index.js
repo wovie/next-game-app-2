@@ -51,7 +51,7 @@ mdb.connectToServer((err) => {
   https.createServer(options, app).listen(port, () => {
     console.log(`HTTPS server started on port: ${port}`);
 
-    if (process.env.NODE_ENV.trim() === 'development') {
+    if (process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development') {
       jobs.run();
     }
   });
