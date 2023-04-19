@@ -1,6 +1,6 @@
 const express = require('express');
-const https = require('https');
-const fs = require('fs');
+// const https = require('https');
+// const fs = require('fs');
 const mdb = require('./db/mdb');
 // const cors = require('cors');
 const jobs = require('./jobs/jobs');
@@ -43,10 +43,10 @@ mdb.connectToServer((err) => {
     process.exit();
   }
 
-  const options = {
-    key: fs.readFileSync('client-key.pem'),
-    cert: fs.readFileSync('client-cert.pem'),
-  };
+  // const options = {
+  //   key: fs.readFileSync('client-key.pem'),
+  //   cert: fs.readFileSync('client-cert.pem'),
+  // };
 
   // https.createServer(options, app).listen(port, () => {
   //   console.log(`HTTPS server started on port: ${port}`);
@@ -57,7 +57,7 @@ mdb.connectToServer((err) => {
   // });
 
   app.listen(port, () => {
-    console.log(`HTTPS server started on port: ${port}`);
+    console.log(`Server started on port: ${port}`);
 
     if (process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development') {
       jobs.run();
