@@ -55,6 +55,7 @@ function renderGoogleButton(timeout: number | void) {
   const element = document.getElementById('google_sign_in');
   if (element === null) {
     setTimeout(renderGoogleButton, timeout ? timeout * 3 : GOOGLE_TIMEOUT);
+    return;
   }
 
   if (google) {
@@ -153,7 +154,7 @@ goHome();
 function todos() {
   const todos = [
     'Add ITAD jobs',
-    'Fix: Google is not defined',
+    'Fix: Google is not defined?',
     'Fix: ignoreDeprecations',
     'Support HTTPS',
 

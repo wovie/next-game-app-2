@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
+import fs from 'node:fs';
 
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -15,8 +16,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://localhost:5000',
+        secure: false,
       },
+    },
+    https: {
+      key: fs.readFileSync('client-key.pem'),
+      cert: fs.readFileSync('client-cert.pem'),
     },
   },
 });
