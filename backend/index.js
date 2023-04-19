@@ -1,6 +1,6 @@
 const express = require('express');
 // const https = require('https');
-// const fs = require('fs');
+const fs = require('fs');
 const mdb = require('./db/mdb');
 // const cors = require('cors');
 const jobs = require('./jobs/jobs');
