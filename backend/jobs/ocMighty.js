@@ -46,7 +46,7 @@ async function addGame(ocData) {
     const result = await games.methods.addGame(game);
     game._id = result.upsertedId;
     await hltb.methods.getData(game);
-    console.log('ocMighty addGame result:', result);
+    console.log('ocMighty addGame result:', { ...result, name });
   } catch (e) {
     console.log(e);
   }

@@ -156,7 +156,6 @@ function todos() {
     'Add ITAD jobs',
     'Fix: Google is not defined?',
     'Fix: ignoreDeprecations',
-    'Support HTTPS',
 
     'Fixed column widths, fix responsiveness',
     'Filters: Platforms',
