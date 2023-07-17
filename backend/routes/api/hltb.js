@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const UserAgent = require('user-agents');
 const verify = require('../verify');
 const games = require('./games');
 
@@ -43,11 +44,11 @@ async function getData(game) {
         },
       };
 
-      const result = await axios.post(`${url}api/search`, payload, {
+      const result = await axios.post(`${url}api/search`, { ...payload }, {
         headers: {
-          'Content-Type': 'application/json',
           Origin: 'https://howlongtobeat.com',
           Referer: 'https://howlongtobeat.com',
+          'User-Agent': new UserAgent().toString(),
         },
       });
 
@@ -59,17 +60,15 @@ async function getData(game) {
       howLongToBeatId = game_id;
     }
 
-    const result = await axios.get(`${url}game/${howLongToBeatId}`);
+    const result = await axios.get(`${url}game/${howLongToBeatId}`, {
+      headers: {
+        'User-Agent': new UserAgent().toString(),
+      },
+    });
     const $ = cheerio.load(result.data);
     let node = $('main');
-    // console.log(node.attr("class"));
-    // node = node.find("div[class^='GameStats_game_times']");
     node = node.find("table[class^='GameTimeTable_game_main_table']");
-    // console.log(node.attr("class"));
     node = node.children('tbody').contents();
-    // const data = $.extract({
-    //   li: ["main div[class^='GameStats_game_times'] ul .GameStats_short__mnFjd"],
-    // });
 
     const howLongToBeatTime = {};
     const pattern = /[^\d]+/g;

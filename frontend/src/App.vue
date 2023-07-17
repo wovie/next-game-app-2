@@ -53,20 +53,18 @@ window.onload = function () {
 
 function renderGoogleButton(timeout: number | void) {
   const element = document.getElementById('google_sign_in');
-  if (element === null) {
+  if (element === null || typeof google === 'undefined') {
     setTimeout(renderGoogleButton, timeout ? timeout * 3 : GOOGLE_TIMEOUT);
     return;
   }
 
-  if (google) {
-    const theme = userStore.isLoggedIn ? 'filled_blue' : 'filled_black';
-    google.accounts.id.renderButton(element as HTMLElement, {
-      type: 'icon',
-      theme,
-      size: 'large',
-      shape: 'circle',
-    });
-  }
+  const theme = userStore.isLoggedIn ? 'filled_blue' : 'filled_black';
+  google.accounts.id.renderButton(element as HTMLElement, {
+    type: 'icon',
+    theme,
+    size: 'large',
+    shape: 'circle',
+  });
 }
 
 async function login(response: any) {
@@ -153,28 +151,29 @@ goHome();
 
 function todos() {
   const todos = [
-    'Add ITAD jobs',
-    'Fix: Google is not defined?',
+    'Add: Steam reviews',
+    'Add: ITAD jobs',
+    'Fixed?: google is not defined',
     'Fix: ignoreDeprecations',
 
-    'Fixed column widths, fix responsiveness',
+    'UI: Fixed column widths, fix responsiveness',
     'Filters: Platforms',
     'Filters: Released',
     'Filters: OC',
     'Save filters to db',
 
-    'Add Steam Deck data',
+    'Add: Steam Deck data',
 
-    'Add OC num of reviews',
+    'Add: OC num of reviews',
 
-    'Prettify Blacklist',
+    'UI: Prettify Blacklist',
     'Blacklist: Min number of reviews: 8',
 
-    'Close SELECT after sending game to deck',
-    'Branding: OnDeck',
+    'UI: Close SELECT after sending game to deck',
+    'Branding: New brand?',
     'Error handling: frontend receives axios error obj, see OpenCriticService.data()',
     'New solution for jobs (Render free plan sleeps)',
-    'More loaders, animations',
+    'UI: More loaders, animations',
   ];
 
   if (todos.length) {

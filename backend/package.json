@@ -16,7 +16,8 @@
     "google-auth-library": "^8.7.0",
     "lodash": "^4.17.21",
     "mongodb": "^5.1.0",
-    "toad-scheduler": "^2.2.0"
+    "toad-scheduler": "^2.2.0",
+    "user-agents": "^1.0.1443"
   },
   "devDependencies": {
     "eslint": "^8.36.0",
