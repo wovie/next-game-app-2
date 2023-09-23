@@ -7,12 +7,20 @@ const url = 'api/games/';
 
 class GameService {
   static async getGames() {
-    try {
-      const result = await axios.get(url);
-      return result.data;
-    } catch (e: any) {
-      console.error(e.response.data);
-    }
+    let count = 0;
+    const maxTries = 10;
+    do {
+      try {
+        const result = await axios.get(url);
+        count = maxTries;
+        return result.data;
+      } catch (e: any) {
+        console.error(e.response.data);
+        console.error('GameService:getGames() error count:', count);
+        count++;
+      }
+      await new Promise((r) => setTimeout(r, 10000));
+    } while (count < maxTries);
   }
 
   static async addGame(game: Game) {
