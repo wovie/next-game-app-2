@@ -62,40 +62,44 @@ function checkLimits(headers) {
 module.exports = {
   interval,
   run: async () => {
-    bucket = [];
+    try {
+      bucket = [];
 
-    let skip = 0;
+      let skip = 0;
 
-    do {
-      console.log('skip', skip);
-      const result = await mightyGames(skip);
-      const { data, headers } = result;
-      const mighty = _.filter(data, { tier: 'Mighty' });
-      const cursor = findGames.findOpenCriticId(_.map(mighty, 'id'));
-      const existing = await cursor.map((g) => g.openCriticId).toArray();
+      do {
+        console.log('skip', skip);
+        const result = await mightyGames(skip);
+        const { data, headers } = result;
+        const mighty = _.filter(data, { tier: 'Mighty' });
+        const cursor = findGames.findOpenCriticId(_.map(mighty, 'id'));
+        const existing = await cursor.map((g) => g.openCriticId).toArray();
 
-      // eslint-disable-next-line no-loop-func
-      mighty.forEach((r) => {
-        const { id } = r;
-        if (existing.indexOf(id) === -1) {
-          bucket.push(r);
+        // eslint-disable-next-line no-loop-func
+        mighty.forEach((r) => {
+          const { id } = r;
+          if (existing.indexOf(id) === -1) {
+            bucket.push(r);
+          }
+        });
+
+        skip = mighty.length > 0 && checkLimits(headers) ? skip + 20 : -1;
+
+        await new Promise((r) => setTimeout(r, 1000));
+      } while (skip >= 0);
+
+      console.log('OpenCritic Mighty bucket count:', bucket.length);
+
+      if (bucket.length === 0) return;
+
+      do {
+        for (let i = 0; i < apiRate; i += 1) {
+          addGame(bucket.shift());
         }
-      });
-
-      skip = mighty.length > 0 && checkLimits(headers) ? skip + 20 : -1;
-
-      await new Promise((r) => setTimeout(r, 1000));
-    } while (skip >= 0);
-
-    console.log('OpenCritic Mighty bucket count:', bucket.length);
-
-    if (bucket.length === 0) return;
-
-    do {
-      for (let i = 0; i < apiRate; i += 1) {
-        addGame(bucket.shift());
-      }
-      await new Promise((r) => setTimeout(r, 5000));
-    } while (bucket.length > 0);
+        await new Promise((r) => setTimeout(r, 5000));
+      } while (bucket.length > 0);
+    } catch (e) {
+      console.log(e);
+    }
   },
 };
