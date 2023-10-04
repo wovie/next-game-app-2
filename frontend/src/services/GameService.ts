@@ -15,7 +15,7 @@ class GameService {
         count = maxTries;
         return result.data;
       } catch (e: any) {
-        console.error(e.response.data);
+        if (e && e.response) console.error(e.response.data);
         console.error('GameService:getGames() error count:', count);
         count++;
       }
