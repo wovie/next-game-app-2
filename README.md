@@ -77,3 +77,19 @@ prettier: opinionated code formatter
 Prettier
 ESLint
 
+## Updating npm packages
+
+Show outdated packages
+```
+npm outdated
+```
+
+Get link to package site and check Github releases
+```
+npm view <package>
+```
+
+Update and save version to package.json
+```
+npm update <package> --save
+```

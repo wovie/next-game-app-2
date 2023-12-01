@@ -14,7 +14,7 @@ const gameStore = useGameStore();
 
 async function updateTime(game: any) {
   if (DEBUG_LOADING) return (loading.value = true);
-  if (!userStore.canUpdate(game.howLongToBeatTimeUpdated)) return;
+  if (!userStore.canUpdate()) return;
   loading.value = true;
   await HowLongToBeatService.data(game);
   await gameStore.fetchGames();
@@ -31,7 +31,7 @@ async function updateTime(game: any) {
         border
         class="hltb d-flex justify-space-evenly fill-height align-center"
         :class="{
-          link: userStore.canUpdate(props.game.howLongToBeatTimeUpdated),
+          link: userStore.canUpdate(),
         }"
         elevation="1"
       >
@@ -54,17 +54,12 @@ async function updateTime(game: any) {
         <v-tooltip
           activator="parent"
           location="top"
-          v-if="
-            game.howLongToBeatTimeUpdated ||
-            userStore.canUpdate(props.game.howLongToBeatTimeUpdated)
-          "
+          v-if="game.howLongToBeatTimeUpdated || userStore.canUpdate()"
         >
           <div v-if="game.howLongToBeatTimeUpdated">
             Main | Main+ | Complete
           </div>
-          <UpdateNow
-            v-if="userStore.canUpdate(props.game.howLongToBeatTimeUpdated)"
-          />
+          <UpdateNow v-if="userStore.canUpdate()" />
         </v-tooltip>
       </v-sheet>
       <v-progress-linear

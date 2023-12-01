@@ -17,7 +17,7 @@ const CIRCLE_SIZE = '44';
 
 async function updateScore(game: any) {
   if (DEBUG_LOADING) return (loading.value = true);
-  if (!userStore.canUpdate(game.openCriticScoreUpdated)) return;
+  if (!userStore.canUpdate()) return;
   loading.value = true;
   await OpenCriticService.data(game);
   gameStore.fetchGames();
@@ -30,7 +30,7 @@ async function updateScore(game: any) {
     <v-col class="d-flex justify-end">
       <v-sheet
         :class="{
-          link: userStore.canUpdate(props.game.openCriticScoreUpdated),
+          link: userStore.canUpdate(),
         }"
         v-if="
           !loading &&
@@ -47,17 +47,12 @@ async function updateScore(game: any) {
         <v-tooltip
           activator="parent"
           location="top"
-          v-if="
-            game.openCriticScoreUpdated ||
-            userStore.canUpdate(props.game.openCriticScoreUpdated)
-          "
+          v-if="game.openCriticScoreUpdated || userStore.canUpdate()"
         >
           <div v-if="game.openCriticScoreUpdated">
             Updated <WhenUpdated :epoch="game.openCriticScoreUpdated" />
           </div>
-          <UpdateNow
-            v-if="userStore.canUpdate(props.game.openCriticScoreUpdated)"
-          />
+          <UpdateNow v-if="userStore.canUpdate()" />
         </v-tooltip>
         <v-icon
           v-show="!game.openCriticScore"

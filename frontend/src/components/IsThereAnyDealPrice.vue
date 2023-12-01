@@ -15,7 +15,7 @@ const gameStore = useGameStore();
 
 async function updatePrice(game: any) {
   if (DEBUG_LOADING) return (loading.value = true);
-  if (!userStore.canUpdate(game.howLongToBeatTimeUpdated)) return;
+  if (!userStore.canUpdate()) return;
   loading.value = true;
   await IsThereAnyDealService.data(game);
   await gameStore.fetchGames();
@@ -31,7 +31,7 @@ async function updatePrice(game: any) {
         class="itad d-flex fill-height align-center justify-center"
         elevation="1"
         :class="{
-          link: userStore.canUpdate(props.game.howLongToBeatTimeUpdated),
+          link: userStore.canUpdate(),
         }"
         border
         v-if="
@@ -51,15 +51,10 @@ async function updatePrice(game: any) {
         <v-tooltip
           activator="parent"
           location="top"
-          v-if="
-            game.isThereAnyDealPrice ||
-            userStore.canUpdate(props.game.isThereAnyDealPriceUpdated)
-          "
+          v-if="game.isThereAnyDealPrice || userStore.canUpdate()"
         >
           <div v-if="game.isThereAnyDealPriceUpdated">Historical low</div>
-          <UpdateNow
-            v-if="userStore.canUpdate(props.game.howLongToBeatTimeUpdated)"
-          />
+          <UpdateNow v-if="userStore.canUpdate()" />
         </v-tooltip>
       </v-sheet>
       <v-progress-linear

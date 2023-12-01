@@ -160,6 +160,7 @@ function todos() {
     'Add: Steam reviews',
     'Add: ITAD jobs',
     'Fix: ignoreDeprecations',
+    'Fix: [GSI_LOGGER]: Failed to render button before calling initialize()',
 
     'UI: Fixed column widths, fix responsiveness',
     'Filters: Platforms',
