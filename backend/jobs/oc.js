@@ -71,10 +71,10 @@ module.exports = {
     if (!await checkLimits()) return;
 
     do {
+      await new Promise((r) => setTimeout(r, 5000));
       for (let i = 0; i < apiRate; i += 1) {
         getData(bucket.shift());
       }
-      await new Promise((r) => setTimeout(r, 5000));
     } while (bucket.length > 0);
   },
 };
