@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, toRaw } from 'vue';
+import { reactive } from 'vue';
 import type Game from '../props/Game';
 import OpenCriticScore from './OpenCriticScore.vue';
 import HowLongToBeatTime from './HowLongToBeatTime.vue';
@@ -34,7 +34,8 @@ const headers = [
   { key: 'data-table-expand' },
 ];
 
-function formatDate(epoch: number) {
+function formatDate(epoch?: number) {
+  if (!epoch) return;
   const date = new Date(epoch);
   return date.toLocaleDateString(undefined, {
     year: 'numeric',
@@ -48,7 +49,6 @@ function expand(game: Game) {
   else {
     expanded.length = 0;
     expanded.push(game._id);
-    console.log(toRaw(game));
   }
 }
 
@@ -90,39 +90,44 @@ function isExpanded(game: Game) {
         </v-toolbar>
       </template>
 
-      <template v-slot:expanded-row="{ columns, item }">
-        <ExpandedRow :columns="columns" :game="item.raw" />
+      <template v-slot:expanded-row="{ columns, internalItem }">
+        <ExpandedRow :columns="columns" :game="internalItem.raw" />
       </template>
 
-      <template v-slot:item="{ item }">
+      <template v-slot:item="{ internalItem }">
         <v-hover v-slot="{ isHovering, props }">
           <tr
             :class="isHovering ? 'elevation-0' : 'elevation-0'"
             v-bind="props"
           >
-            <td>{{ item.columns.name }}</td>
-            <td><PlatformChips :game="item.raw" /></td>
-            <td><OpenCriticScore :game="item.raw" /></td>
-            <td><HowLongToBeatTime :game="item.raw" /></td>
-            <td><IsThereAnyDealPrice :game="item.raw" /></td>
+            <td>{{ internalItem.columns.name }}</td>
+            <td><PlatformChips :game="internalItem.raw" /></td>
+            <td><OpenCriticScore :game="internalItem.raw" /></td>
+            <td><HowLongToBeatTime :game="internalItem.raw" /></td>
+            <td><IsThereAnyDealPrice :game="internalItem.raw" /></td>
             <td>
               <v-sheet class="text-right text-caption">
                 <v-tooltip
                   activator="parent"
                   location="top"
-                  v-if="Date.now() - item.raw.released < 0"
+                  v-if="
+                    internalItem.raw.released &&
+                    Date.now() - internalItem.raw.released < 0
+                  "
                 >
-                  <WhenReleasing :epoch="item.raw.released" />
+                  <WhenReleasing :epoch="internalItem.raw.released" />
                 </v-tooltip>
-                {{ formatDate(item.raw.released) }}
+                {{ formatDate(internalItem.raw.released) }}
               </v-sheet>
             </td>
             <td>
               <v-btn
                 :icon="
-                  isExpanded(item.raw) ? 'mdi-chevron-up' : 'mdi-chevron-down'
+                  isExpanded(internalItem.raw)
+                    ? 'mdi-chevron-up'
+                    : 'mdi-chevron-down'
                 "
-                @click="expand(item.raw)"
+                @click="expand(internalItem.raw)"
                 variant="text"
                 density="compact"
                 elevation="1"

@@ -157,6 +157,8 @@ function todos() {
     'Fix: Deleting a game should also remove it from decks',
     'Add: Update release date for unreleased games',
 
+    'Add: Stricter Typescript',
+
     'Add: Steam reviews',
     'Add: ITAD jobs',
     'Fix: ignoreDeprecations',
