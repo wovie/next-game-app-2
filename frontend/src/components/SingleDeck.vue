@@ -20,7 +20,7 @@ const settingsStore = useSettingsStore();
 const deckStore = useDeckStore();
 const expanded: string[] = reactive([]);
 
-const headers = [
+const headers: readonly {}[] = [
   { title: 'Name', align: 'start', key: 'name' },
   { title: 'Platforms', align: 'end', key: 'platforms' },
   { title: 'OpenCritic', align: 'end', key: 'openCriticScore' },
