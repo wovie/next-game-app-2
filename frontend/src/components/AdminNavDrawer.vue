@@ -92,8 +92,6 @@ async function getBlacklist() {
   result.forEach((r: BlacklistItem) => {
     blacklist.value.push(r);
   });
-
-  console.log(blacklist);
 }
 
 async function unblacklistGame(id: string) {

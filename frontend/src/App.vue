@@ -151,8 +151,6 @@ goHome();
 
 function todos() {
   const todos = [
-    'Add: Backend tests for upgrading packages',
-
     'Bug: Cant add Dragons Dogma: Dark Arisen',
     'Add: Persist login',
     'Add: Update OC score for unreleased games',
