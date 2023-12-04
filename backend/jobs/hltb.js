@@ -1,7 +1,6 @@
-const _ = require('lodash');
 const findGames = require('./findGames');
 const handleCursor = require('./handleCursor');
-const hltb = require('../routes/api/hltb');
+const hltb = require('../api/hltb');
 
 const idProp = 'howLongToBeatId';
 const updatedProp = 'howLongToBeatTimeUpdated';

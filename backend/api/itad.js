@@ -1,8 +1,8 @@
 const express = require('express');
 const axios = require('axios');
-const verify = require('../verify');
+const verify = require('./verify');
 const games = require('./games');
-const { ISTHEREANYDEAL_KEY } = require('../../config');
+const { ISTHEREANYDEAL_KEY } = require('../config');
 
 const router = express.Router();
 const url = 'https://api.isthereanydeal.com/';

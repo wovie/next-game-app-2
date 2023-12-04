@@ -1,6 +1,6 @@
 const findGames = require('./findGames');
 const handleCursor = require('./handleCursor');
-const oc = require('../routes/api/oc');
+const oc = require('../api/oc');
 
 const idProp = 'openCriticId';
 const updatedProp = 'openCriticScoreUpdated';

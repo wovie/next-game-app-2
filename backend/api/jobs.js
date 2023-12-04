@@ -1,7 +1,7 @@
 const express = require('express');
 const _ = require('lodash');
-const verify = require('../verify');
-const { status } = require('../../jobs/jobs');
+const verify = require('./verify');
+const { status } = require('../jobs/jobs');
 
 const router = express.Router();
 

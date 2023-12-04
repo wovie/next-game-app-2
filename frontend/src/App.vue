@@ -151,11 +151,14 @@ goHome();
 
 function todos() {
   const todos = [
+    'Add: Backend tests for upgrading packages',
+
     'Bug: Cant add Dragons Dogma: Dark Arisen',
     'Add: Persist login',
     'Add: Update OC score for unreleased games',
     'Fix: Deleting a game should also remove it from decks',
     'Add: Update release date for unreleased games',
+    'Add: Jobs logging to Mongodb',
 
     'Add: Stricter Typescript',
 

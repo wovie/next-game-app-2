@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const { ObjectId } = require('mongodb');
 const mdb = require('../db/mdb');
-const games = require('../routes/api/games');
-const blacklist = require('../routes/api/blacklist');
+const games = require('../api/games');
+const blacklist = require('../api/blacklist');
 
 const epochDay = (1000 * 60 * 60 * 24);
 

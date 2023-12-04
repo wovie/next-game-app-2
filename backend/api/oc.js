@@ -1,8 +1,8 @@
 const express = require('express');
 const axios = require('axios');
 const _ = require('lodash');
-const { OPENCRITIC_KEY } = require('../../config');
-const verify = require('../verify');
+const { OPENCRITIC_KEY } = require('../config');
+const verify = require('./verify');
 const games = require('./games');
 
 const router = express.Router();

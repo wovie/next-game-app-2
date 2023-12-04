@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const UserAgent = require('user-agents');
-const verify = require('../verify');
+const verify = require('./verify');
 const games = require('./games');
 
 const router = express.Router();

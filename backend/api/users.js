@@ -1,5 +1,5 @@
 const express = require('express');
-const verify = require('../verify');
+const verify = require('./verify');
 
 const router = express.Router();
 

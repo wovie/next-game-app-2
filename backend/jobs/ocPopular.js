@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const findGames = require('./findGames');
-const oc = require('../routes/api/oc');
-const games = require('../routes/api/games');
-const hltb = require('../routes/api/hltb');
+const oc = require('../api/oc');
+const games = require('../api/games');
+const hltb = require('../api/hltb');
 
 const interval = 7; // hours
 const apiRate = 1; // requests per 5 seconds

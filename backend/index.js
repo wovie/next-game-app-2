@@ -2,11 +2,11 @@ const express = require('express');
 const mdb = require('./db/mdb');
 // const cors = require('cors');
 const jobs = require('./jobs/jobs');
-const oc = require('./routes/api/oc');
-const games = require('./routes/api/games');
-const hltb = require('./routes/api/hltb');
-const blacklist = require('./routes/api/blacklist');
-const itad = require('./routes/api/itad');
+const oc = require('./api/oc');
+const games = require('./api/games');
+const hltb = require('./api/hltb');
+const blacklist = require('./api/blacklist');
+const itad = require('./api/itad');
 
 const app = express();
 const port = 5000;
@@ -22,9 +22,10 @@ console.log('TODO: explore cors');
 app.use('/api/games', games.router);
 app.use('/api/hltb', hltb.router);
 app.use('/api/oc', oc.router);
-app.use('/api/users', require('./routes/api/users'));
-app.use('/api/jobs', require('./routes/api/jobs'));
-app.use('/api/decks', require('./routes/api/decks'));
+app.use('/api/users', require('./api/users'));
+app.use('/api/jobs', require('./api/jobs'));
+app.use('/api/decks', require('./api/decks'));
+
 app.use('/api/blacklist', blacklist.router);
 app.use('/api/itad', itad.router);
 

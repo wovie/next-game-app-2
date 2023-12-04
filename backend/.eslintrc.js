@@ -2,10 +2,11 @@ module.exports = {
   env: {
     es2021: true,
     node: true,
+    'jest/globals': true,
   },
   extends: ['airbnb-base', 'eslint:recommended'],
-  overrides: [
-  ],
+  plugins: ['jest'],
+  overrides: [],
   parserOptions: {
     ecmaVersion: 'latest',
   },
@@ -21,5 +22,6 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-continue': 'off',
     'no-param-reassign': 'off',
+    'max-len': 'off',
   },
 };

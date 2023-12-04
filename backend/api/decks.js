@@ -1,8 +1,8 @@
 const express = require('express');
 const { ObjectId } = require('mongodb');
 const _ = require('lodash');
-const mdb = require('../../db/mdb');
-const verify = require('../verify');
+const mdb = require('../db/mdb');
+const verify = require('./verify');
 
 const router = express.Router();
 
