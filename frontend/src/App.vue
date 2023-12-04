@@ -156,7 +156,7 @@ function todos() {
     'Add: Update OC score for unreleased games',
     'Fix: Deleting a game should also remove it from decks',
     'Add: Update release date for unreleased games',
-    'Add: Jobs logging to Mongodb',
+    'Add: Log job actions to Mongodb',
 
     'Add: Stricter Typescript',
 
