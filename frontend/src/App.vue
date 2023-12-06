@@ -19,7 +19,6 @@ const userStore = useUserStore();
 const deckStore = useDeckStore();
 const settingsStore = useSettingsStore();
 let interceptor: number = -1;
-const GOOGLE_TIMEOUT = 100;
 const LOGO_SIZE = 28;
 const gameStore = useGameStore();
 
@@ -49,12 +48,13 @@ window.onload = function () {
     auto_select: true,
   });
   renderGoogleButton();
+  google.accounts.id.prompt();
 };
 
-function renderGoogleButton(timeout: number | void) {
+function renderGoogleButton() {
   const element = document.getElementById('google_sign_in');
   if (element === null || typeof google === 'undefined') {
-    setTimeout(renderGoogleButton, timeout ? timeout * 3 : GOOGLE_TIMEOUT);
+    setTimeout(renderGoogleButton, 1000);
     return;
   }
 
@@ -152,7 +152,6 @@ goHome();
 function todos() {
   const todos = [
     'Bug: Cant add Dragons Dogma: Dark Arisen',
-    'Add: Persist login',
     'Add: Update OC score for unreleased games',
     'Fix: Deleting a game should also remove it from decks',
     'Add: Update release date for unreleased games',
@@ -163,7 +162,7 @@ function todos() {
     'Add: Steam reviews',
     'Add: ITAD jobs',
     'Fix: ignoreDeprecations',
-    'Fix: [GSI_LOGGER]: Failed to render button before calling initialize()',
+    'Add: Refresh decks after adding a game',
 
     'UI: Fixed column widths, fix responsiveness',
     'Filters: Platforms',
