@@ -151,7 +151,6 @@ goHome();
 
 function todos() {
   const todos = [
-    'Bug: Cant add Dragons Dogma: Dark Arisen',
     'Add: Update OC score for unreleased games',
     'Fix: Deleting a game should also remove it from decks',
     'Add: Update release date for unreleased games',

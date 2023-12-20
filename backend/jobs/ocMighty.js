@@ -68,7 +68,6 @@ module.exports = {
       let skip = 0;
 
       do {
-        console.log('skip', skip);
         const result = await mightyGames(skip);
         const { data, headers } = result;
         const mighty = _.filter(data, { tier: 'Mighty' });

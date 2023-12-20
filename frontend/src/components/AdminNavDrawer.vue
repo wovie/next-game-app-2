@@ -58,7 +58,6 @@ async function addGame(game: SearchResult) {
 
   if (_.find(gameStore.games, { openCriticId: id })) return;
 
-  emit('goHome');
   // adding.value = true;
   clearSearch();
   await GameService.addGame({
@@ -68,7 +67,7 @@ async function addGame(game: SearchResult) {
   });
   // adding.value = false;
 
-  gameStore.fetchGames();
+  emit('goHome');
 }
 
 async function ocLimits() {
@@ -143,7 +142,7 @@ getBlacklist();
       </v-card-text>
       <v-divider></v-divider>
       <v-card-text>
-        <v-list>
+        <v-list density="compact">
           <v-list-item v-for="item in blacklist" :key="item._id">
             <template v-slot:title>
               {{ item.name }}
@@ -152,7 +151,7 @@ getBlacklist();
               <v-btn
                 icon="mdi-eye"
                 variant="text"
-                density="comfortable"
+                density="compact"
                 @click="unblacklistGame(item._id)"
               ></v-btn>
             </template>
