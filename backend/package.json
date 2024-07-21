@@ -18,7 +18,8 @@
     "lodash": "^4.17.21",
     "mongodb": "^5.1.0",
     "toad-scheduler": "^2.3.0",
-    "user-agents": "^1.1.43"
+    "user-agents": "^1.1.43",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "@shelf/jest-mongodb": "^4.2.0",

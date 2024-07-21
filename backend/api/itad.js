@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const validator = require('validator');
 const verify = require('./verify');
 const games = require('./games');
 const { ISTHEREANYDEAL_KEY } = require('../config');
@@ -13,41 +14,49 @@ async function getData(game) {
     const { name } = game;
     let { isThereAnyDealId } = game;
 
-    if (!isThereAnyDealId) {
-      const result = await axios.get(`${url}v02/search/search/`, {
+    const isUUID = isThereAnyDealId && validator.isUUID(isThereAnyDealId);
+
+    if (!isUUID) {
+      const result = await axios.get(`${url}games/lookup/v1`, {
         params: {
           key,
-          q: name,
+          title: name,
         },
       });
 
-      const { results } = result.data.data;
-      const { plain } = results.length > 0 && results[0];
-      if (!plain) {
+      const { data } = result;
+      const { id } = data.game;
+      if (!data.found) {
         throw new Error(`Unable to determine IsThereAnyDeal ID for: ${name}`);
       }
 
-      isThereAnyDealId = plain;
+      isThereAnyDealId = id;
     }
 
-    const result = await axios.get(`${url}v01/game/lowest/`, {
+    let result = await axios.post(
+      'https://api.isthereanydeal.com/games/historylow/v1',
+      [isThereAnyDealId],
+      { params: { key } },
+    );
+
+    const { data } = result;
+    const { cut, price } = data[0].low;
+
+    result = await axios.get(`${url}games/info/v2`, {
       params: {
         key,
-        plains: isThereAnyDealId,
-        region: 'us',
-        country: 'US',
+        id: isThereAnyDealId,
       },
     });
 
-    const data = result.data.data[isThereAnyDealId];
-    const { cut, price, urls } = data;
+    const { urls } = result.data;
 
     const update = {
       ...game,
       isThereAnyDealId,
       isThereAnyDealPrice: {
         cut,
-        price,
+        price: price.amount,
       },
       isThereAnyDealPriceUpdated: Date.now(),
       isThereAnyDealUrl: urls.game,
@@ -58,6 +67,7 @@ async function getData(game) {
     if (!updated.acknowledged) throw updated;
     else return update;
   } catch (e) {
+    console.log(e);
     throw new Error(e.response.data.message || e.response.data.messages);
   }
 }

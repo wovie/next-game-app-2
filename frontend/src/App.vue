@@ -151,8 +151,9 @@ goHome();
 
 function todos() {
   const todos = [
-    'Fix: Update SSL certs by 5/19',
-    'Fix: ITAD API changes',
+    'Migrate: ITAD plains to UUID',
+    'Add: UNIT TESTS',
+
     'Add: Dialog to remove game from other decks when sending to a new deck',
     'Add: Update OC score for unreleased games',
     'Fix: Deleting a game should also remove it from decks',
