@@ -27,4 +27,6 @@ module.exports = {
   },
 
   getCollection: (collection) => dbConnection.collection(collection),
+
+  closeConnection: () => client.close(),
 };
